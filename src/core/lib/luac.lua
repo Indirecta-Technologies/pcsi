@@ -22,6 +22,8 @@
 -- load and initialize the required modules
 ------------------------------------------------------------------------
 
+local olderror = error
+
 do
 
 	local luaZ = {}
@@ -32,11 +34,12 @@ do
 	local luaK = {}
 	local size_size_t = 4
 
+	local error = olderror
 
 	-- currently asserts are enabled because the codebase hasn't been tested
 	-- much (if you don't want asserts, just comment them out)
 	local function lua_assert(test)
-		if not test then error("assertion failed!") end
+		if not test then return error("assertion failed!") end
 	end
 
 
@@ -315,7 +318,7 @@ do
 			msg = string.format("%s near "..self.LUA_QS, msg, txtToken(ls, token))
 		end
 		-- luaD_throw(ls->L, LUA_ERRSYNTAX)
-		error(msg)
+		return error(msg)
 	end
 
 	------------------------------------------------------------------------
@@ -324,7 +327,7 @@ do
 	--   (see luaX:next and luaX:lookahead elsewhere in this file)
 	------------------------------------------------------------------------
 	function luaX:syntaxerror(ls, msg)
-		self:lexerror(ls, msg, ls.t.token)
+		return self:lexerror(ls, msg, ls.t.token)
 	end
 
 	------------------------------------------------------------------------
@@ -502,7 +505,7 @@ do
 		if not seminfo then
 			-- format error with correct decimal point: no more options
 			self:buffreplace(ls, ls.decpoint, ".")  -- undo change (for error message)
-			self:lexerror(ls, "malformed number", "TK_NUMBER")
+			return self:lexerror(ls, "malformed number", "TK_NUMBER")
 		end
 	end
 
@@ -557,7 +560,7 @@ do
 		while true do
 			local c = ls.current
 			if c == "EOZ" then
-				self:lexerror(ls, Token and "unfinished long string" or
+				return self:lexerror(ls, Token and "unfinished long string" or
 											"unfinished long comment", "TK_EOS")
 			elseif c == "[" then
 				--# compatibility code start
@@ -568,7 +571,7 @@ do
 						--# compatibility code start
 						if self.LUA_COMPAT_LSTR == 1 then
 							if sep == 0 then
-								self:lexerror(ls, "nesting of [[...]] is deprecated", "[")
+								return self:lexerror(ls, "nesting of [[...]] is deprecated", "[")
 							end
 						end
 						--# compatibility code end
@@ -614,9 +617,9 @@ do
 		while ls.current ~= del do
 			local c = ls.current
 			if c == "EOZ" then
-				self:lexerror(ls, "unfinished string", "TK_EOS")
+				return self:lexerror(ls, "unfinished string", "TK_EOS")
 			elseif self:currIsNewline(ls) then
-				self:lexerror(ls, "unfinished string", "TK_STRING")
+				return self:lexerror(ls, "unfinished string", "TK_STRING")
 			elseif c == "\\" then
 				c = self:nextc(ls)  -- do not save the '\'
 				if self:currIsNewline(ls) then  -- go through
@@ -638,7 +641,7 @@ do
 							i = i + 1
 						until i >= 3 or not string.find(ls.current, "%d")
 						if c > 255 then  -- UCHAR_MAX
-							self:lexerror(ls, "escape sequence too large", "TK_STRING")
+							return self:lexerror(ls, "escape sequence too large", "TK_STRING")
 						end
 						self:save(ls, string.char(c))
 					end
@@ -688,7 +691,7 @@ do
 				elseif sep == -1 then
 					return "["
 				else
-					self:lexerror(ls, "invalid long string delimiter", "TK_STRING")
+					return self:lexerror(ls, "invalid long string delimiter", "TK_STRING")
 				end
 			----------------------------------------------------------------
 			elseif c == "=" then
@@ -1654,7 +1657,7 @@ do
 		local offset = dest - (pc + 1)
 		lua_assert(dest ~= self.NO_JUMP)
 		if math.abs(offset) > luaP.MAXARG_sBx then
-			luaX:syntaxerror(fs.ls, "control structure too long")
+			return luaX:syntaxerror(fs.ls, "control structure too long")
 		end
 		luaP:SETARG_sBx(jmp, offset)
 	end
@@ -1822,7 +1825,7 @@ do
 		local newstack = fs.freereg + n
 		if newstack > fs.f.maxstacksize then
 			if newstack >= self.MAXSTACK then
-				luaX:syntaxerror(fs.ls, "function or expression too complex")
+				return luaX:syntaxerror(fs.ls, "function or expression too complex")
 			end
 			fs.f.maxstacksize = newstack
 		end
@@ -2655,7 +2658,7 @@ do
 	------------------------------------------------------------------------
 	function luaY:growvector(L, v, nelems, size, t, limit, e)
 		if nelems >= limit then
-			error(e)  -- was luaG_runerror
+			return error(e)  -- was luaG_runerror
 		end
 	end
 
@@ -2762,7 +2765,7 @@ do
 	-- throws a syntax error if token expected is not there
 	------------------------------------------------------------------------
 	function luaY:error_expected(ls, token)
-		luaX:syntaxerror(ls,
+		return luaX:syntaxerror(ls,
 			string.format(self.LUA_QS.." expected", luaX:token2str(ls, token)))
 	end
 
@@ -2775,7 +2778,7 @@ do
 			string.format("main function has more than %d %s", limit, what) or
 			string.format("function at line %d has more than %d %s",
 										fs.f.linedefined, limit, what)
-		luaX:lexerror(fs.ls, msg, 0)
+		return luaX:lexerror(fs.ls, msg, 0)
 	end
 
 	------------------------------------------------------------------------
@@ -2812,7 +2815,7 @@ do
 	-- throws error if condition not matched
 	------------------------------------------------------------------------
 	function luaY:check_condition(ls, c, msg)
-		if not c then luaX:syntaxerror(ls, msg) end
+		if not c then return luaX:syntaxerror(ls, msg) end
 	end
 
 	------------------------------------------------------------------------
@@ -2821,9 +2824,9 @@ do
 	function luaY:check_match(ls, what, who, where)
 		if not self:testnext(ls, what) then
 			if where == ls.linenumber then
-				self:error_expected(ls, what)
+				return self:error_expected(ls, what)
 			else
-				luaX:syntaxerror(ls, string.format(
+				return luaX:syntaxerror(ls, string.format(
 					self.LUA_QS.." expected (to close "..self.LUA_QS.." at line %d)",
 					luaX:token2str(ls, what), luaX:token2str(ls, who), where))
 			end
@@ -3039,7 +3042,7 @@ do
 	function luaY:enterlevel(ls)
 		ls.L.nCcalls = ls.L.nCcalls + 1
 		if ls.L.nCcalls > self.LUAI_MAXCCALLS then
-			luaX:lexerror(ls, "chunk has too many syntax levels", 0)
+			return luaX:lexerror(ls, "chunk has too many syntax levels", 0)
 		end
 	end
 
@@ -3366,7 +3369,7 @@ do
 	--]]
 					f.is_vararg = f.is_vararg + self.VARARG_ISVARARG
 				else
-					luaX:syntaxerror(ls, "<name> or "..self:LUA_QL("...").." expected")
+					return luaX:syntaxerror(ls, "<name> or "..self:LUA_QL("...").." expected")
 				end
 			until f.is_vararg ~= 0 or not self:testnext(ls, ",")
 		end--if
@@ -3430,7 +3433,7 @@ do
 		local c = ls.t.token
 		if c == "(" then  -- funcargs -> '(' [ explist1 ] ')'
 			if line ~= ls.lastline then
-				luaX:syntaxerror(ls, "ambiguous syntax (function call x new statement)")
+				return luaX:syntaxerror(ls, "ambiguous syntax (function call x new statement)")
 			end
 			luaX:next(ls)
 			if ls.t.token == ")" then  -- arg list is empty?
@@ -3446,8 +3449,7 @@ do
 			self:codestring(ls, args, ls.t.seminfo)
 			luaX:next(ls)  -- must use 'seminfo' before 'next'
 		else
-			luaX:syntaxerror(ls, "function arguments expected")
-			return
+			return luaX:syntaxerror(ls, "function arguments expected")
 		end
 		lua_assert(f.k == "VNONRELOC")
 		local base = f.info  -- base register for call
@@ -3485,7 +3487,7 @@ do
 		elseif c == "TK_NAME" then
 			self:singlevar(ls, v)
 		else
-			luaX:syntaxerror(ls, "unexpected symbol")
+			return luaX:syntaxerror(ls, "unexpected symbol")
 		end--if c
 		return
 	end
@@ -3819,7 +3821,7 @@ do
 			bl = bl.previous
 		end
 		if not bl then
-			luaX:syntaxerror(ls, "no loop to break")
+			return luaX:syntaxerror(ls, "no loop to break")
 		end
 		if upval then
 			luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
@@ -3985,7 +3987,7 @@ do
 		elseif c == "," or c == "TK_IN" then
 			self:forlist(ls, varname)
 		else
-			luaX:syntaxerror(ls, self:LUA_QL("=").." or "..self:LUA_QL("in").." expected")
+			return luaX:syntaxerror(ls, self:LUA_QL("=").." or "..self:LUA_QL("in").." expected")
 		end
 		self:check_match(ls, "TK_END", "TK_FOR", line)
 		self:leaveblock(fs)  -- loop scope (`break' jumps to this point)
@@ -4236,8 +4238,12 @@ do
 	-- interfacing to yueliang
 	------------------------------------------------------------------------
 
-	function compile(source, name)
+	function compile(source, name, onErr)
 		name = name or 'script'
+		if onErrr then error = function(...)
+			onErr(...)
+			olderror(...)
+		end end
 		-- luaZ:make_getF returns a file chunk reader
 		-- luaZ:init returns a zio input stream
 		local zio = luaZ:init(luaZ:make_getF(source), nil)
@@ -4246,7 +4252,7 @@ do
 		-- func is the function prototype in tabular form; in C, func can
 		-- now be used directly by the VM, this can't be done in Lua
 
-		local func = luaY:parser(LuaState, zio, nil, "@"..name)
+		local func = luaY:parser(LuaState, zio, nil, "@"..name, onErr)
 		-- luaU:make_setS returns a string chunk writer
 		local writer, buff = luaU:make_setS()
 		-- luaU:dump builds a binary chunk
@@ -4259,6 +4265,5 @@ do
 
 	--if shine and shine.setCompiler then shine.setCompiler(compile) end
 end
-local version = 1.2
 
-return compile, version
+return compile

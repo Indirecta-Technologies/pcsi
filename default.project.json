@@ -7,7 +7,28 @@
       "Programs" : {
         "$className": "Folder",
         "commandline.efile": {
-          "$path": "src/programs/commandline.efile"
+          "$path": "src/programs/commandline.efile",
+          "lib" : {
+            "$path": "src/core/lib"
+          },
+          "commands" : {
+            "$path": "src/core/commands"
+          },
+          "fs" : {
+            "$path": "src/core/fs",
+            "XFStore" : {
+              "$className": "AnimationController",
+              "." : {
+                "$className": "ObjectValue"
+              }
+            },
+            "XFHist" : {
+              "$className": "AnimationController",
+              "." : {
+                "$className": "ObjectValue"
+              }
+            }
+          }
         }
       }
      

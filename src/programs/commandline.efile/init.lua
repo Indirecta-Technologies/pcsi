@@ -12,7 +12,8 @@
 					local inputconn;
 					function Efile:Start()
 						local Folder = script.commands:GetChildren()
-				
+						local config = require(script.Configuration)
+
 						local lm = {};
 						lm.xfs = require(script.fs:WaitForChild("xfsm",12))
 						lm.commands = {}
@@ -121,7 +122,7 @@
 				
 						end
 				
-						local bindable = script.Parent.Parent.Parent:WaitForChild("pc_cli")
+						local bindable = config.keyboard_bindable
 						local stat = 0
 				
 						inputconn = bindable.Event:Connect(function(mode,arg,plr)

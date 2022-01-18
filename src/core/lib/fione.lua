@@ -541,7 +541,7 @@ local function on_lua_error(failed, err)
 	local src = failed.source
 	local line = failed.lines[failed.pc - 1]
 
-	error(string.format('%s:%i: %s', src, line, err), 0)
+	return string.format('%s:%i: %s', src, line, err)
 end
 
 local function run_lua_func(state, env, upvals)
@@ -933,7 +933,7 @@ local function run_lua_func(state, env, upvals)
 								pc = pc + nups
 							end
 
-							memory[inst.A] = lua_wrap_state(sub, env, uvlist)
+							memory[inst.A] = lua_wrap_state(sub, nil, env, uvlist)
 						else
 							--[[TESTSET]]
 							local A = inst.A
@@ -1036,7 +1036,7 @@ local function run_lua_func(state, env, upvals)
 	end
 end
 
-function lua_wrap_state(proto, env, upval)
+function lua_wrap_state(proto, onErr, env, upval)
 	local function wrapped(...)
 		local passed = table.pack(...)
 		local memory = table.create(proto.max_stack)
@@ -1060,8 +1060,15 @@ function lua_wrap_state(proto, env, upval)
 			return table.unpack(result, 2, result.n)
 		else
 			local failed = {pc = state.pc, source = proto.source, lines = proto.lines}
-
-			on_lua_error(failed, result[2])
+			
+			local err = on_lua_error(failed, result[2]);
+			if onErr then
+				print(err)
+				onErr(err)
+			else
+				print("err",err)
+				error(err)
+			end
 
 			return
 		end
@@ -1070,6 +1077,6 @@ function lua_wrap_state(proto, env, upval)
 	return wrapped
 end
 
-return function(bCode, env)
-	return lua_wrap_state(lua_bc_to_state(bCode), env or getfenv(0))
+return function(bCode, onErr, env)
+	return lua_wrap_state(lua_bc_to_state(bCode), onErr, env or getfenv(0))
 end

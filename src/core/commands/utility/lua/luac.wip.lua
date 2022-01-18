@@ -1,4 +1,6 @@
-local xfs = require(script.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
+local xfs = require(script.Parent.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
+local luac = require(script.Parent.Parent.Parent.Parent.lib.luac)
+local fione = require(script.Parent.Parent.Parent.Parent.lib.fione)
 
 local cmd = {
 	name = script.Name,
@@ -6,7 +8,6 @@ local cmd = {
 	usage = "$ luau compile|interpret|environment (filename) ", --TO REDO
 	displayOutput = false,
 	fn = function(pCsi, essentials,args)
-		local loadstr = require(script.Parent.Parent.Parent.lib.luau)
 		-- feel free to add more globals to your environment,
 		-- but it may pose a security risk
 		local enviroment = {}
@@ -37,9 +38,9 @@ local cmd = {
 			local plaintext;
 			if xfs.exists(name) then plaintext = xfs.read(name) else error("unable to read file "..name) end
 			local ctick = tick()
-			local bytecode, err = loadstr.compile(name,plaintext)
+			local bytecode, err = luac(plaintext, name)
 			if not bytecode or err then error(err) end
-			if not args[3] then args[3] = "output.luac"end
+			if not args[3] then args[3] = "luac.out"end
 				if xfs.exists(args[3]) then
 				else
 					xfs.mkfile(args[3])
@@ -61,8 +62,7 @@ local cmd = {
 				
 			end
 			print(plaintext)
-			local interpet, err = loadstr.interpret(plaintext, enviroment)
-			print("obbbb")
+			local interpet, err = fione(plaintext, nil, enviroment)
 			if not interpet or err then error(err)  end
 			local output = interpet()
 			

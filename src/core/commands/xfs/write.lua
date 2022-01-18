@@ -5,7 +5,10 @@ local cmd = {
 	desc = [[]],
 	usage = [[$ ]],
 	fn = function(pCsi, essentials,args)
-		xfs.rename(args[1], args[2])
+		local name = args[1]
+		table.remove(args, 1)
+		args = table.concat(args, " ")
+		xfs.write(name, args)
 	end,
 }
 

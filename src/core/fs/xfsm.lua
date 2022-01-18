@@ -316,12 +316,21 @@ function module.chmod(name, newmode)
 
 end
 
+function decodeChar(hex)
+	return string.char(tonumber(hex,16))
+end
+ 
+function decodeString(str)
+	local output, t = string.gsub(str,"%%(%x%x)",decodeChar)
+	return output
+end
+
 function module.write(name, text)
 	assert(type(name) == "string", "invalid parameter type, expected string, got "..type(name))
 	assert(type(text) == "string", "invalid parameter type, expected string, got "..type(text))
 	assert(module.type(name) == "File", name.." must be a file.")
 	assert(module.mode(name) == "w" or module.mode(name) == "w+r" or module.mode(name) == "all", "incorrect mode. (expected w|w+r, got "..module.mode(name)..")")
-	module.currentIndex[name].Value = text
+	module.currentIndex[name].Value = game:GetService("HttpService"):UrlEncode(text)
 	module.currentIndex[name]:SetAttribute("LastEdit", tick())
 
 end
@@ -340,9 +349,9 @@ function module.compress(name)
 	assert(module.mode(name) == "w+r" or module.mode(name) == "all", "incorrect mode. (expected all|w+r, got "..module.mode(name)..")")
 	
 	local xcompress = require(script.Parent.Parent.lib.xcompress)
-	local uncompressed = module.currentIndex[name].Value
+	local uncompressed = module.read(name)
 	
-	module.currentIndex[name].Value = xcompress.compress(module.currentIndex[name].Value)
+	module.write(name, xcompress.compress(uncompressed))
 	module.currentIndex[name]:SetAttribute("LastEdit", tick())
 	module.currentIndex[name]:SetAttribute("xcompress","true")
 end
@@ -357,16 +366,39 @@ function module.append(name, text)
 	local buffer;
 	
 	if module.currentIndex[name]:GetAttribute("xcompress") == true then
-		buffer = xcompress.decompress(module.currentIndex[name].Value)
+		buffer = module.read(name)
 		buffer ..= text
 		buffer = xcompress.compress(buffer)
 	else
-		buffer = module.currentIndex[name].Value
+		buffer = module.read(name)
 		buffer ..= text
 	end
 	
-	module.currentIndex[name].Value = buffer
+	module.write(name, game:GetService("HttpService"):UrlEncode(buffer))
 	module.currentIndex[name]:SetAttribute("LastEdit", tick())
+
+end
+
+module.fileTypes = {
+	["luac"] = {
+		mime = "application/x-compiled-lua",
+		matches = {
+			'^luac[^ -~\n\t]' -- only matches binary bytecode files with "luac0000000000000000" 
+		}
+	}
+}
+function module:fileType(name)
+	local text = self.read(name)
+
+	for i,v in pairs(self.fileTypes) do
+		local matched = false
+		for i,v in ipairs(v.matches) do
+			if text:match(v) then
+				matched = true
+			end
+		end
+		if matched then return v else continue end
+	end
 
 end
 
@@ -377,6 +409,9 @@ function module.read(name)
 	assert(module.mode(name) == "r" or module.mode(name) == "w+r" or module.mode(name) == "a+r" or module.mode(name) == "all", "incorrect mode. (expected r|w+r|a+r, got "..module.mode(name)..")")
 	local xcompress = require(script.Parent.Parent.lib.xcompress)
 	
+	
+	 
+
 	local toread;
 	if module.type(name) == "File" then
 		toread = module.currentIndex[name]
@@ -389,8 +424,8 @@ function module.read(name)
 
 	
 	if toread.Value == "" then return "(empty file)" end
-	if toread:GetAttribute("xcompress") == true then return xcompress.decompress(toread.Value) 
-	else return toread.Value
+	if toread:GetAttribute("xcompress") == true then return xcompress.decompress(decodeString(toread.Value))
+	else return decodeString(toread.Value)
 	end
 	
 
