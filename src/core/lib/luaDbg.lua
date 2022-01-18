@@ -558,8 +558,12 @@ local function Debug(bytecode)
 	local indent = 1;
 	local last = true;
 
+	local buffer = "";
 	local function print(n, ...)
-		xprint(("\t"):rep(n) .. table.concat({...}, ""));
+		local txt = ("\t"):rep(n) .. table.concat({...}, "")
+		buffer ..= txt.."\n"
+		--xprint(txt)
+		--xprint(txt);
 	end
 
 	local function getSpec(chunk, instr, a, b, c)
@@ -681,7 +685,6 @@ local function Debug(bytecode)
 		end
 	end
 
-	print(0, "LuaDbg.lua")
 	print(0, "")
 	print(0, "[Chunk Header]")
 	print(1, "Identifier: ", chunk.Identifier)
@@ -696,6 +699,7 @@ local function Debug(bytecode)
 	print(0, "")
 	print(0, "[Main]")
 	printProto(indent, chunk.Main)
+	return buffer
 end
 
 local function Rip(input)
