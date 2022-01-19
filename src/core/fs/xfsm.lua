@@ -381,23 +381,22 @@ end
 
 module.fileTypes = {
 	["luac"] = {
-		mime = "application/x-compiled-lua",
+		mime = "application/x-lua-bytecode",
 		matches = {
-			'^luac[^ -~\n\t]' -- only matches binary bytecode files with "luac0000000000000000" 
+			'[^ -~\n\t]' -- only matches binary bytecode files with "luac0000000000000000" 
 		}
 	}
 }
 function module:fileType(name)
 	local text = self.read(name)
 
-	for i,v in pairs(self.fileTypes) do
+	for i,k in pairs(self.fileTypes) do
 		local matched = false
-		for i,v in ipairs(v.matches) do
+		for i,v in ipairs(k.matches) do
 			if text:match(v) then
-				matched = true
+				return k.mime
 			end
 		end
-		if matched then return v else continue end
 	end
 
 end

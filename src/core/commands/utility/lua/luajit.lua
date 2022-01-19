@@ -40,7 +40,40 @@ local cmd = {
 		environment.pcall = pcall
 		environment.task = task
 		environment.spawn = task.spawn
-		environment.os = os
+
+		local tbl = {}
+		local osmt = {
+				__index = function(t, i) -- __unm is for the unary - operator
+					if i == "exit" then
+						return function(...)
+							pCsi.parseCommand = oldparse
+							return
+						end
+					elseif i == "getenv" then
+						return function(k)
+							return environment[k]
+						end
+					elseif i == "execute" then
+						return function(k)
+							oldparse(k)
+						end
+					elseif i == "tempname" then
+						return function() 
+							local prefix = "lua_"
+							local rand = tostring(math.random(1111,99999))
+							
+							return prefix..(rand:gsub('.', function (c)
+								return string.format('%02X', string.byte(c))
+							end))
+						end
+					else
+						return os[i]
+					end
+				end
+		}
+
+
+		environment.os = setmetatable(tbl, osmt)
 		environment.tick = tick
 		environment.utf8 = utf8
 		environment._G = essentials.Freestore
@@ -79,13 +112,8 @@ local cmd = {
 			function pCsi:parseCommand(args)
 				essentials.Console.info(string.rep(">",lev).." "..args)
 				args = string.split(args, " ")
-				if args[1] == "exit" then
-					self.parseCommand = oldparse
-					return
-				else
-					lev = (lev == 1 and 2 or 1)
-					exec(table.concat(args, " "))
-				end
+				lev = (lev == 1 and 2 or 1)
+				exec(table.concat(args, " "))
 			end
 
 		end

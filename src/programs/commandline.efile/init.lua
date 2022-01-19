@@ -70,14 +70,18 @@
 								end
 							else
 								if lm.commands[command] == nil then
-									if lm.xfs.exists(command) and lm.xfs.type(command) == "File" or lm.xfs.type(command) == "Link" then
+									if lm.xfs.exists(command) then
 										local filetype = string.split(command,".")
 										filetype = filetype[#filetype]
 										if filetype == "luac" then
 											lm:execute(lm.commands["luau"],{"interpret",command})
+										elseif filetype == "sh" then
+											task.wait() -- in case some questionable person writes a batch file that reads itself, just LeftCtrl+RightAlt+F5 to reboot
+											lm:parseCommand(lm.xfs.read(command))
 										end
 									else
-										Essentials.Console.warn("Command or file '"..command.."' not found")
+										Essentials.Console.warn("'"..command.."' is not recognized as an internal or external command, operable program or batch file.")
+
 									end
 								else
 									local r = lm:execute(lm.commands[command],args);
