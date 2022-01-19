@@ -74,7 +74,7 @@ local cmd = {
 			lev = 1
 			return exec(table.concat(args, " "))
 		else
-			essentials.Console.info(ver.." -- Copyright (C) Indirecta Technologies 2022, Inspired by Mike Pall's Just In Time Lua interpreter")
+			essentials.Console.info(ver.." -- Copyright (C) Indirecta Technologies 2022 - Inspired by Mike Pall's LuaJIT Utillity")
 			essentials.Console.info("Input 'exit' to return to shell")
 			function pCsi:parseCommand(args)
 				essentials.Console.info(string.rep(">",lev).." "..args)
