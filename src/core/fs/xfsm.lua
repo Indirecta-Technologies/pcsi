@@ -64,14 +64,15 @@ function module:totalBytesInInstance(objName)
 	end
 
 	if self.type(objName) == "Reference" then
-		local count = 0
+		--[[local count = 0
 		for i,v in pairs(obj.Value:GetDescendants()) do
 			count += self:totalBytesInInstance(v.Name)
 		end
-		return count
+		return count--]]
+		return 0
 	end
 	if  self.type(objName) == "File" then
-		return (#obj.Value+1)^2
+		return ((#obj.Value+1)^2)/256
 	end
 	if  self.type(objName) == "Folder" then
 		local count = 0

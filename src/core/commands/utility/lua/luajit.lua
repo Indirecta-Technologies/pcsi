@@ -43,7 +43,7 @@ local cmd = {
 
 		local tbl = {}
 		local osmt = {
-				__index = function(t, i) -- __unm is for the unary - operator
+				__index = function(t, i)
 					if i == "exit" then
 						return function(...)
 							pCsi.parseCommand = oldparse
