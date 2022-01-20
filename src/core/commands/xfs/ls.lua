@@ -8,7 +8,9 @@ local cmd = {
 		if args[1] == "-m" then
 			local buffer = {}
 			for obj in xfs.list() do
-				table.insert(buffer, obj.Name.."; Size: "..(xfs:totalBytesInInstance(obj.Name).."siB" or "?").."; Type: "..(xfs.type(obj.Name) or "?"))				
+				local bytes = xfs:totalBytesInInstance(obj.Name)
+				bytes = xfs:formatBytesToUnits(bytes)
+				table.insert(buffer, obj.Name.."; Size: "..bytes.."; Type: "..(xfs.type(obj.Name) or "?").."; Mime: "..xfs:fileType(obj.Name))				
 			end
 			buffer = table.concat(buffer,";\n")
 			essentials.Console.info(buffer)

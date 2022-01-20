@@ -32,7 +32,22 @@
 				
 						lm:load(Folder)
 						
-						
+						lm.io = {}
+
+						lm.io.read = function()
+							local inputted = false
+							local oldparse = lm.parseCommand
+							function lm:parseCommand(...)
+								inputted = true
+								lm.parseCommand = oldparse
+								return ...
+							end
+							repeat task.wait() until inputted
+						end
+
+						lm.io.write = function(...)
+							Essentials.Console.info(...)
+						end
 						
 						function lm:execute(command,args)
 							local r;

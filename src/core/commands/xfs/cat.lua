@@ -6,7 +6,12 @@ local cmd = {
 	displayOutput = true,
 	usage = [[$ ]],
 	fn = function(pCsi, essentials,args)
-		return xfs.read(args[1])
+		local str = xfs.read(args[1])
+		local buffer = ""
+		for char in string.gmatch(str, "([%z\1-\127\194-\244][\128-\191]*)") do
+			buffer ..= char -- show only unicode characters, prevents richtext from breaking
+		end
+		return buffer
 	end,
 }
 

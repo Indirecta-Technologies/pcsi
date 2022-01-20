@@ -25,26 +25,66 @@ local cmd = {
 	fn = function(pCsi, essentials, args)
 		-- feel free to add more globals to your environment,
 		-- but it may pose a security risk
-		local enviroment = {}
-		enviroment.math = math
-		enviroment.print = essentials.Console.info
-		enviroment.warn = essentials.Console.warn
-		enviroment.error = essentials.Console.error
-		enviroment.wait = task.wait
-		enviroment.bit32 = bit32
-		enviroment.string = string
+		local environment = {}
+		local customerror = function(...)
+			local errortxt = table.concat({...}, " ")
+			print(errortxt)
+			essentials.Console.error(errortxt)
+		end
 
-		enviroment.Xinu = essentials
-		enviroment.pCsi = pCsi
+		environment.math = math
+		environment.print = essentials.Console.info
+		environment.warn = essentials.Console.warn
+		environment.error = essentials.Console.error
 
-		enviroment.table = table
-		enviroment.pcall = pcall
-		enviroment.task = task
-		enviroment.spawn = spawn
-		enviroment.os = os
-		enviroment.tick = tick
-		enviroment.utf8 = utf8
-		enviroment._G = essentials.Freestore
+		environment.wait = task.wait
+		environment.bit32 = bit32
+		environment.string = string
+
+		environment.Xinu = essentials
+		environment.pCsi = pCsi
+
+		environment.table = table
+		environment.pcall = pcall
+		environment.task = task
+		environment.spawn = task.spawn
+
+		local tbl = {}
+		local osmt = {
+				__index = function(t, i)
+					if i == "exit" then
+						return function(...)
+							return --shrug
+						end
+					elseif i == "getenv" then
+						return function(k)
+							return environment[k]
+						end
+					elseif i == "execute" then
+						return function(k)
+							pCsi.parseCommand(k)
+						end
+					elseif i == "tempname" then
+						return function() 
+							local prefix = "lua_"
+							local rand = tostring(math.random(1111,99999))
+							
+							return prefix..(rand:gsub('.', function (c)
+								return string.format('%02X', string.byte(c))
+							end))
+						end
+					else
+						return os[i]
+					end
+				end
+		}
+
+
+		environment.os = setmetatable(tbl, osmt)
+		environment.tick = tick
+		environment.utf8 = utf8
+		environment._G = essentials.Freestore
+		environment._VERSION = ver
 
 	
 
@@ -109,8 +149,8 @@ local cmd = {
 					.. args[3]
 					.. " in "
 					.. btick - ctick
-					.. " seconds, tot. siB "
-					.. xfs:totalBytesInInstance(output)
+					.. " seconds, size "
+					.. xfs:formatBytesToUnits(xfs:totalBytesInInstance(output))
 			)
 		end
 

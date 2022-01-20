@@ -54,9 +54,35 @@ local function ShiftReferenceRelated(obj, val)
 	end
 end
 
+function module:formatBytesToUnits(Input)
+	local Suffixes = {"KiB", "MiB", "GiB"} --ultimately unlikely that GiB and TiB are used
+	local Negative = Input < 0
+	Input = math.abs(Input)
+
+	local Paired = false
+	for i,v in pairs(Suffixes) do
+		if not (Input >= 10^(3*i)) then
+			Input = Input / 10^(3*(i-1))
+			local isComplex = (string.find(tostring(Input),".") and string.sub(tostring(Input),4,4) ~= ".")
+			Input = string.sub(tostring(Input),1,(isComplex and 4) or 3) .. (Suffixes[i-1] or "")
+			Paired = true
+			break;
+		end
+	end
+	if not Paired then
+		local Rounded = math.floor(Input)
+		Input = tostring(Rounded).." B"
+	end
+
+	if Negative then
+		return "-"..Input
+	end
+
+	return Input
+end
 
 function module:totalBytesInInstance(objName)
-	if not module.exists(objName) then return end
+	if not module.exists(objName) then return 0 end
 	local obj = module.currentIndex[objName]
 	if objName == "." or objName == ".." then return 0 end
 	if self.type(objName) == "Link" then
@@ -72,7 +98,7 @@ function module:totalBytesInInstance(objName)
 		return 0
 	end
 	if  self.type(objName) == "File" then
-		return ((#obj.Value+1)^2)/256
+		return math.round(((#obj.Value)^2)/256*100)/100
 	end
 	if  self.type(objName) == "Folder" then
 		local count = 0
@@ -384,22 +410,38 @@ module.fileTypes = {
 	["luac"] = {
 		mime = "application/x-lua-bytecode",
 		matches = {
-			'[^ -~\n\t]' -- only matches binary bytecode files with "luac0000000000000000" 
+			{'pattern', 'LuaQ[^ -~\n\t]'}
 		}
-	}
+	},
+	["bin"] = {
+		mime = "application/octet-stream",
+		matches = {
+			{'pattern', '[^ -~\n\t]'}
+		}
+	},
+	
 }
+
+function module:fileExtension(name) 
+end
+
 function module:fileType(name)
+	if self.type(name) == "Folder" then return "directory" end
+
 	local text = self.read(name)
 
 	for i,k in pairs(self.fileTypes) do
 		local matched = false
 		for i,v in ipairs(k.matches) do
-			if text:match(v) then
+			if v[1] == "pattern" and text:match(v[2]) then
+				return k.mime
+			elseif v[1] == "extension" and self:fileExtension(v[2]) == v[2] then
 				return k.mime
 			end
 		end
+		return "?"
 	end
-
+	return "0FT?"
 end
 
 function module.read(name)
