@@ -23,9 +23,17 @@ local cmd = {
 	]], --TO REDO
 	displayOutput = false,
 	fn = function(pCsi, essentials, args)
-		-- feel free to add more globals to your environment,
-		-- but it may pose a security risk
+		-- luac.lua - partial reimplementation of luac in Lua.
+		-- http://lua-users.org/wiki/LuaCompilerInLua
+		-- David Manura et al.
+		-- Licensed under the same terms as Lua (MIT license).
+
+		local outfile = "luac.out"
+
 		local environment = {}
+
+		local oldparse = pCsi.parseCommand
+		
 		local customerror = function(...)
 			local errortxt = table.concat({...}, " ")
 			print(errortxt)
@@ -54,7 +62,8 @@ local cmd = {
 				__index = function(t, i)
 					if i == "exit" then
 						return function(...)
-							return --shrug
+							pCsi.parseCommand = oldparse
+							return
 						end
 					elseif i == "getenv" then
 						return function(k)
@@ -62,7 +71,7 @@ local cmd = {
 						end
 					elseif i == "execute" then
 						return function(k)
-							pCsi.parseCommand(k)
+							oldparse(k)
 						end
 					elseif i == "tempname" then
 						return function() 
@@ -84,118 +93,95 @@ local cmd = {
 		environment.tick = tick
 		environment.utf8 = utf8
 		environment._G = essentials.Freestore
-		environment._VERSION = ver
-
-	
-
-		local options = { File = "", Compile = false, Load = false, OutFile = "", Strip = false }
-		if not args or #args == 0 then
-			error("Incorrect usage. Please pass an input file in!")
+		environment.loadstring = function(...) 
+		return fione(..., nil, environment)
 		end
-		local i = 1
-		while true do
-			local a = args[i]
-			local b = a:lower()
-			print(a,b)
-			if b == "-o" or b == "-output" then
-				options.OutFile = args[i + 1]
-				i = i + 1
-			elseif b == "-l" or b == "-load" then
-				options.Load = true
-			elseif b == "-c" or b == "-compile" then
-				options.Compile = true
-			elseif b == "-s" or b == "-strip" then
-				options.Strip = true
-			else
-				options.File = a
-			end
-			i = i + 1
-			if i > #args then
+
+
+
+
+		-- Parse options.
+		local chunks = {}
+		local allowoptions = true
+		local iserror = false
+		local parseonly = false
+		while args[1] do
+			if allowoptions and args[1] == "-" then
+				chunks[#chunks + 1] = args[1]
+				allowoptions = false
+			elseif allowoptions and args[1] == "-l" then
+				pCsi.io.write("-l option not implemented\n")
+				iserror = true
+			elseif allowoptions and args[1] == "-o" then
+				outfile = assert(args[2], "-o needs argument")
+				table.remove(args, 1)
+			elseif allowoptions and args[1] == "-p" then
+				parseonly = true
+			elseif allowoptions and args[1] == "-s" then
+				pCsi.io.write("-s option ignored\n")
+			elseif allowoptions and args[1] == "-v" then
+				pCsi.io.write(_VERSION .. " Copyright (C) 1994-2008 Lua.org, PUC-Rio\n")
+			elseif allowoptions and args[1] == "--" then
+				allowoptions = false
+			elseif allowoptions and args[1]:sub(1, 1) == "-" then
+				pCsi.io.write("luac: unrecognized option '" .. args[1] .. "'\n")
+				iserror = true
 				break
-			end
-		end
-		if options.File == "" then
-			error("No input file!")
-		end
-
-		local function compile(sdebug, name, output)
-			local plaintext
-			if xfs.exists(name) then
-				plaintext = xfs.read(name)
 			else
-				error("unable to read file " .. name)
+				chunks[#chunks + 1] = args[1]
 			end
-			local ctick = tick()
-			local bytecode, err = luac(plaintext, name)
-			if not bytecode or err then
-				error(err)
-			end
-			if sdebug then
-				bytecode = luadbg.Rip(bytecode)
-			end
-			if not output then
-				output = "luac.out"
-			end
-			if not xfs.exists(output) then
-				xfs.mkfile(output)
-			end
-			xfs.write(output, bytecode)
-			local btick = tick()
-
-			essentials.Console.info(
-				"Compiled "
-					.. name
-					.. " to "
-					.. args[3]
-					.. " in "
-					.. btick - ctick
-					.. " seconds, size "
-					.. xfs:formatBytesToUnits(xfs:totalBytesInInstance(output))
-			)
+			table.remove(args, 1)
+		end
+		if #chunks == 0 and not iserror then
+			pCsi.io.write("luac: no input files given\n")
+			iserror = true
 		end
 
-		local function load(name, outputb, file)
-			local plaintext
-			if xfs.exists(name) then
-				plaintext = xfs.read(name)
-			else
-				error("file " .. name.." does not exist")
-			end
-			local interpet, err = fione(plaintext, nil, enviroment)
-			if not interpet or err then
-				error(err)
-			end
-			local output = interpet()
-
-			if
-				type(output) == "string"
-				or type(output) == "table"
-				or type(output) == "number"
-				or type(output) == "number" and file and outputb and output
-			then
-				if xfs.exists(file) then
-					xfs.write(file, output)
-				else
-					xfs.mkfile(file)
-					xfs.write(file, output)
-				end
-			else
-				return output
-			end
-
+		if iserror then
+			pCsi.io.write([[
+usage: luac [options] [filenames].
+Available options are:
+  -        process stdin
+  -l       list
+  -o name  output to file 'name' (default is "luac.out")
+  -p       parse only
+  -s       strip debug information
+  -v       show version information
+  --       stop handling options
+]])
 			return
 		end
 
-		if options.Compile then
-			options.OutFile = options.OutFile or "luac.out"
-			compile(options.Strip, options.File, options.OutFile)
+		-- Load/compile chunks.
+		local filenames = {}
+		for i, filename in ipairs(chunks) do
+			filenames[i] = filename
+			chunks[i] = assert(xfs.read(filename))
 		end
-		if options.Load then
-			options.OutFile = options.OutFile or nil
-			load(options.File, (not options.OutFile == nil), options.OutFile)
+
+		if parseonly then
+			return
 		end
-	
-	
+
+		-- Combine chunks.
+		if #chunks == 1 then
+			chunks = chunks[1]
+		else
+			-- Note: the reliance on loadstring is possibly not ideal,
+			-- though likely unavoidable.
+			local ts = { "local loadstring=loadstring;" }
+			for i, f in ipairs(chunks) do
+				ts[i] = ("loadstring%q(...);"):format(luac(f, filenames[i], nil))
+			end
+			--possible extension: ts[#ts] = 'return ' .. ts[#ts]
+			chunks = assert(table.concat(ts))
+		end
+
+		-- Output.
+		if not xfs.exists(outfile) then
+			xfs.mkfile(outfile)
+		end
+		xfs.write(outfile, luac(chunks, outfile, nil))
 	end,
 }
 
