@@ -419,7 +419,7 @@ module.fileTypes = {
 			{'pattern', '[^ -~\n\t]'}
 		}
 	},
-	
+
 }
 
 function module:fileExtension(name) 
@@ -465,7 +465,6 @@ function module.read(name)
 	module.currentIndex[name]:SetAttribute("LastRead", tick())
 
 	
-	if toread.Value == "" then return "(empty file)" end
 	if toread:GetAttribute("xcompress") == true then return xcompress.decompress(decodeString(toread.Value))
 	else return decodeString(toread.Value)
 	end

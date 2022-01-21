@@ -101,7 +101,7 @@ local cmd = {
     local quit = false
 
     local function get_user_move()
-      local here, waiting_for_input
+      local here
     
       waiting_for_input = true
       
@@ -109,13 +109,11 @@ local cmd = {
 
       local here = ""
 
-      function pCsi:parseCommand(args)
-        essentials.Console.info(" "..args)
-        if waiting_for_input then
-            args = string.split(args, " ")[1]
-            waiting_for_input = false
-            if args == 'U' or args == 'u' then
-              args = 'u'
+      args = pCsi.io.read()
+      essentials.Console.info(" "..args)
+        args = string.split(args, " ")[1]
+        if args == 'U' or args == 'u' then
+             args = 'u'
             elseif args == 'D' or args == 'd' then
               args = 'd'
             elseif args == 'L' or args == 'l' then
@@ -131,11 +129,8 @@ local cmd = {
               essentials.Console.info("That was not a valid instruction")
             end
           here = args
-        end
-     
-    end
+    
 
-    repeat task.wait() until waiting_for_input == false
     
       return here  
     end
