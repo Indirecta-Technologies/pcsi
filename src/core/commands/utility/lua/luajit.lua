@@ -45,6 +45,12 @@ local cmd = {
 		local xpcall = xpcall
 		local string_format = string.format
 		local string_sub = string.sub
+		local olderr = error
+		local error = function(...) 
+			local args = table.concat(...)
+			args = args:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;")
+			olderr(args)
+		end
 
 		local progname = LUA_PROGNAME
 
@@ -157,6 +163,7 @@ local cmd = {
 			if not status and msg ~= nil then
 				msg = (type(msg) == "string" or type(msg) == "number") and tostring(msg)
 					or "(error object is not a string)"
+				msg = msg:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;")
 				l_message(true, progname, msg)
 			end
 			return status
@@ -291,7 +298,10 @@ local cmd = {
 			local f, msg
 			while true do -- repeat until gets a complete line
 				
-				f, msg = fione(luac(b, "=stdin"), nil, environment)
+				local s,em = pcall(function()
+					f, msg = fione(luac(b, "stdin"), nil, environment)
+				end)
+				if not s and em then error(em) break end
 				if not incomplete(msg) then
 					break
 				end -- cannot try to add lines?

@@ -11,7 +11,7 @@ local cmd = {
 		for char in string.gmatch(str, "([%z\1-\127\194-\244][\128-\191]*)") do
 			buffer ..= char -- show only unicode characters, prevents richtext from breaking
 		end
-		return (#str == 0 and "(empty)" or str)
+		return (#str == 0 and "(empty)" or str):gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;")
 	end,
 }
 

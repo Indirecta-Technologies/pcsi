@@ -35,14 +35,17 @@
 						lm.io = {}
 
 						lm.io.read = function()
-							local inputted = false
+							local input = nil
 							local oldparse = lm.parseCommand
 							function lm:parseCommand(...)
-								inputted = true
-								lm.parseCommand = oldparse
-								return ...
+								input = ...
+								task.spawn(function()
+									task.wait(0.5)
+									lm.parseCommand = oldparse
+								end)
 							end
-							repeat task.wait() until inputted
+							repeat task.wait() until input
+							return input
 						end
 
 						lm.io.write = function(...)
