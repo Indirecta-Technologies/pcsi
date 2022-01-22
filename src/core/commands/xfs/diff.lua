@@ -5,7 +5,7 @@ local cmd = {
 	desc = [[]],
 	displayOutput = true,
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		return xfs.diff(args[1],args[2])
 	end,
 }

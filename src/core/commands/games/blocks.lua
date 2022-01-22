@@ -3,7 +3,7 @@ local cmd = {
 	desc = [[WIP]],
 	usage = [[]], --TO REDO
 	displayOutput = false,
-	fn = function(pCsi, essentials, args)
+	fn = function(plr, pCsi, essentials, args)
     local board = {
       {0,0,0,0},
       {0,0,0,0},

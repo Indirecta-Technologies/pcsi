@@ -2,7 +2,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[Manage execution files]],
 	usage = [[$ efile start|stop|track|list template.efile]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		assert(args[1],"First argument/mode not specified")
 		if args[1] == "start" then
 			local program = args[2]

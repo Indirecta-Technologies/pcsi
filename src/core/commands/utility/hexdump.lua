@@ -6,7 +6,7 @@ local cmd = {
 	desc = [[Output the input]],
 	usage = [[$ info]],
 	displayOutput = true,
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		
 		local function hex_dump(buf)
 			local buffer = ""

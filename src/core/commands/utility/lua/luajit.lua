@@ -7,7 +7,7 @@ local cmd = {
 	desc = [[Run luau instructions in a sandboxed enviroment]],
 	usage = "$ luau compile|interpret|environment (filename) ",
 	displayOutput = false,
-	fn = function(pCsi, essentials, args)
+	fn = function(plr, pCsi, essentials, args)
 		-- lua.lua - Lua 5.1 interpreter (lua.c) reimplemented in Lua.
 		--
 		-- WARNING: This is not completed but was quickly done just an experiment.

@@ -2,7 +2,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[Output connected DisplayOverBindable devices]],
 	usage = "$ dob name MyScreen\n$ dob uuid EB127E3A-D774-4A89-8392-8D2BE464D4C9\n$ dob index 1\n$ dob devices",
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		--[[
 		local newDevice = {
 								Name = body.Name,

@@ -4,7 +4,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[ Output input to a file]],
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		local file = args[1]
 		table.remove(args, 1)
 		local text = table.concat(args, " ")

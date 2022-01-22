@@ -2,7 +2,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[Displays info about Xinu]],
 	usage = [[$ info]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		essentials.Console.info("-- System Information --\n"..
 			"Manufacturer: "..essentials.Identification.ProductInfo.Product.Manufacturer.."\n"..
 			"Name: "..essentials.Identification.ProductInfo.Software.Name.."\n"..

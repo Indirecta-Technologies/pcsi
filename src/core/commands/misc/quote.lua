@@ -2,7 +2,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[Displays a random motivational quote]],
 	usage = [[$ quote]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		local quotes = {
 			'"Every man has his secret sorrows which the world knows not; and often times we call a man cold when he is only sad." -Henry Wadsworth Longfellow';
 			'"I came, I saw, I conquered." - Julius Ceasar';

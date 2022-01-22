@@ -4,7 +4,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[]],
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		local oldBytes = xfs:totalBytesInInstance(args[1])
 		xfs.compress(args[1])
 		local newBytes = xfs:totalBytesInInstance(args[1])

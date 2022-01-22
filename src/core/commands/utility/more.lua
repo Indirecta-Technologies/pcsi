@@ -3,7 +3,7 @@ local cmd = {
 	desc = [[Split input into pages]],
 	usage = [[$ more input]], -- allow user to input lines per page
     displayOutput = true,
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		local oldparse = pCsi.parseCommand
 
 

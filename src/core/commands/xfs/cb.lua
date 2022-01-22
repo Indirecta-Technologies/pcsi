@@ -4,7 +4,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[]],
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		local buffer = {}
 		for obj in xfs.list("clipboard") do
 			table.insert(buffer, obj.Name.."; Size: "..(xfs:totalBytesInInstance(obj.Name).."siB" or "?").."; Type: "..(xfs.type(obj.Name) or "?"))				

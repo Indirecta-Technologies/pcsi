@@ -4,7 +4,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[]],
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		if args[1] == "-m" then
 			local buffer = {}
 			for obj in xfs.list() do

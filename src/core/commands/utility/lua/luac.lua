@@ -22,7 +22,7 @@ local cmd = {
 		
 	]], --TO REDO
 	displayOutput = false,
-	fn = function(pCsi, essentials, args)
+	fn = function(plr, pCsi, essentials, args)
 		-- luac.lua - partial reimplementation of luac in Lua.
 		-- http://lua-users.org/wiki/LuaCompilerInLua
 		-- David Manura et al.

@@ -3,7 +3,7 @@ local cmd = {
 	desc = [[WIP]],
 	usage = [[]], --TO REDO
 	displayOutput = false,
-	fn = function(pCsi, essentials, args)
+	fn = function(plr, pCsi, essentials, args)
 		-- feel free to add more globals to your environment,
 		-- but it may pose a security risk
 		local oldparse = pCsi.parseCommand

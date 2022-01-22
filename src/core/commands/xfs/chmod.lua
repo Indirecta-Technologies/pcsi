@@ -4,7 +4,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[]],
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		xfs.chmod(args[1], args[2])
 	end,
 }

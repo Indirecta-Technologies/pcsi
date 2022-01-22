@@ -38,7 +38,10 @@
 							local input = nil
 							local oldparse = lm.parseCommand
 							function lm:parseCommand(...)
-								input = ...
+								input = {...}
+								table.remove(input, 1)
+								input = table.unpack(input)
+
 								task.spawn(function()
 									task.wait(0.5)
 									lm.parseCommand = oldparse
@@ -52,16 +55,16 @@
 							Essentials.Console.info(...)
 						end
 						
-						function lm:execute(command,args)
+						function lm:execute(plr, command,args)
 							local r;
 							local s,m = pcall(function()
-								r = command.fn(self, Essentials,args)
+								r = command.fn(plr, self, Essentials,args)
 							end)
 							if not s then Essentials.Console.error(m) end
 							return r
 						end
 				
-						local function parseCmd(arg, o)
+						local function parseCmd(plr, arg, o)
 							print(arg)
 							arg = string.split(arg," ")
 							local command = arg[1]
@@ -92,7 +95,7 @@
 										local filetype = string.split(command,".")
 										filetype = filetype[#filetype]
 										if filetype == "luac" then
-											lm:execute(lm.commands["luau"],{"interpret",command})
+											lm:execute(plr, lm.commands["luau"],{"interpret",command})
 										elseif filetype == "sh" then
 											task.wait() -- in case some questionable person writes a batch file that reads itself, just LeftCtrl+RightAlt+F5 to reboot
 											lm:parseCommand(lm.xfs.read(command))
@@ -102,7 +105,7 @@
 
 									end
 								else
-									local r = lm:execute(lm.commands[command],args);
+									local r = lm:execute(plr, lm.commands[command],args);
 									if r and not o and lm.commands[command].displayOutput then 
 										Essentials.Console.info(r) 
 									end
@@ -111,7 +114,7 @@
 							end
 						end
 				
-						function lm:parseCommand(fEStr)
+						function lm:parseCommand(plr, fEStr)
 							fEStr = string.match(fEStr, "^%s*(.-)%s*$")
 				
 							local time = os.date("%Y/%m/%d %H:%M:%S",os.time())
@@ -135,9 +138,9 @@
 											omit = true
 										end
 									end
-									prevRCmd = parseCmd(v, omit)
+									prevRCmd = parseCmd(plr, v, omit)
 								end
-								if fLStr[2] then self:execute(self.commands["output"],{fLStr[2], prevRCmd}) end
+								if fLStr[2] then self:execute(plr, self.commands["output"],{fLStr[2], prevRCmd}) end
 							end
 				
 				
@@ -146,9 +149,14 @@
 				
 						local bindable = config.keyboard_bindable
 						local stat = 0
-				
+						
+						lm.onNewOutput = Instance.new("BindableEvent")
+						lm.onUpdatedOutput = Instance.new("BindableEvent")
+						lm.onKeyStroke = Instance.new("BindableEvent")
+
 						inputconn = bindable.Event:Connect(function(mode,arg,plr)
 							if mode == "keyStroke" then
+								lm.onKeyStroke:Fire(plr, arg)
 								if arg == Enum.KeyCode.LeftControl then
 									if stat == 0 then stat = 1 else stat = 0 end
 								elseif arg == Enum.KeyCode.RightAlt then
@@ -167,9 +175,12 @@
 								end
 							end
 							if mode == "newOutput" then
-								lm:parseCommand(arg)
+								lm.onNewOutput:Fire(plr, arg)
+								lm:parseCommand(plr, arg)
 							end
-				
+							if mode == "newOutput" then
+								lm.onUpdatedOutput:Fire(plr, arg)
+							end
 				
 						end)
 				

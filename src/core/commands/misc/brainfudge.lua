@@ -2,7 +2,7 @@ local cmd = {
 	name = script.Name,
 	desc = [[Executes the popular esoteric programming language instructions and displays the output\n The greater-than and less-than characters have been replaced with z and x]],
 	usage = [[$ brainfudge [code] (input)]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		
 		local function Run(str, inp, memlimit, printf)
 			memlimit = memlimit or 12

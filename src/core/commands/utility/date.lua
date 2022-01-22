@@ -3,7 +3,7 @@ local cmd = {
 	desc = [[Date view and format]],
 	usage = [[$ date (formatString) (unix)]],
     displayOutput = true,
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		return os.date((args[1] or "%c"),(args[2] or os.time() ) )
 	end,
 }

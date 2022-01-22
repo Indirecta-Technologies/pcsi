@@ -6,7 +6,7 @@ local cmd = {
 	desc = [[Examine Lua bytecode including VM specs, prototypes, upvalues, constants and instructions]],
 	usage = "$ luadbg -e filename", --TO REDO
 	displayOutput = true,
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		
 		if args[1] and args[1] == "-e" then --examine
 			local name = args[2]

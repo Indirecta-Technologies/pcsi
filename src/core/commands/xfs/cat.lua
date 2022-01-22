@@ -5,7 +5,7 @@ local cmd = {
 	desc = [[]],
 	displayOutput = true,
 	usage = [[$ ]],
-	fn = function(pCsi, essentials,args)
+	fn = function(plr, pCsi, essentials, args)
 		local str = xfs.read(args[1])
 		local buffer = ""
 		for char in string.gmatch(str, "([%z\1-\127\194-\244][\128-\191]*)") do
