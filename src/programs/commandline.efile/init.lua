@@ -96,9 +96,11 @@
 										filetype = filetype[#filetype]
 										if filetype == "luac" then
 											lm:execute(plr, lm.commands["luau"],{"interpret",command})
-										elseif filetype == "sh" then
+										elseif filetype == "ch" then
 											task.wait() -- in case some questionable person writes a batch file that reads itself, just LeftCtrl+RightAlt+F5 to reboot
-											lm:parseCommand(lm.xfs.read(command))
+											local source = lm.xfs.read(command)
+											source = string.gsub(source, "$args", table.concat(args))
+											lm:parseCommand()
 										end
 									else
 										Essentials.Console.warn("'"..command.."' is not recognized as an internal or external command, operable program or batch file.")
@@ -123,10 +125,10 @@
 								wait(0.3)
 								Essentials.Console.info("└ "..self.xfs.fullCwd().."> "..fEStr)
 							end)
-							local fLStr = string.split(fEStr," >> ") or fEStr
+							local fLStr = string.split(fEStr," > ") or fEStr
 							
 							for i,v in ipairs(fLStr) do
-								local fStr = string.split(v," && ") or v
+								local fStr = string.split(v," | ") or v -- pipe char
 								local prevRCmd = nil;
 								for i,v in ipairs(fStr) do
 									if prevRCmd then v = v.." "..prevRCmd end
