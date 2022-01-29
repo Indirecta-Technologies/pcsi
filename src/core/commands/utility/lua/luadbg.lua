@@ -11,8 +11,8 @@ local cmd = {
 		if args[1] and args[1] == "-e" then --examine
 			local name = args[2]
 			local bytecode;
-			if xfs.exists(name) then 
-				bytecode = xfs.read(name)
+			if pCsi.xfs.exists(name) then 
+				bytecode = pCsi.xfs.read(name)
 				local data = luadbg.Debug(bytecode)
 				return data or nil;
 			 else 

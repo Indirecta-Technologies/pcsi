@@ -1,4 +1,3 @@
-local xfs = require(script.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
 
 local cmd = {
 	name = script.Name,
@@ -6,7 +5,7 @@ local cmd = {
 	displayOutput = true,
 	usage = [[$ ]],
 	fn = function(plr, pCsi, essentials, args)
-		local str = xfs.read(args[1])
+		local str = pCsi.xfs.read(args[1])
 		local buffer = ""
 		for char in string.gmatch(str, "([%z\1-\127\194-\244][\128-\191]*)") do
 			buffer ..= char -- show only unicode characters, prevents richtext from breaking

@@ -11,27 +11,43 @@
 				   return function(Essentials, Efile)
 					local inputconn;
 					function Efile:Start()
-						local Folder = script.commands:GetChildren()
+						local Folder = script.commands
 						local config = require(script.Configuration)
 
 						local lm = {};
 						lm.xfs = require(script.fs:WaitForChild("xfsm",12))
-						lm.commands = {}
-						function lm:load(folder) 
+						lm.fileTypeBindings = {}
+						--lm.libs = {}
+
+						function lm:load(name, folder, recursiv)
+							if not folder or not name then return end
+							local parent = recursiv or self
+							if not parent[name] then 
+								parent[name] = {}
+								parent[name].__isDir = true
+							end
+							local newfolder = parent[name]
 							for i,v in pairs(folder) do
 								if typeof(v) == "Instance" and v:IsA("ModuleScript") then
+									local n = v.Name
 									v = require(v)
-									if not v.name and not v.fn then continue end
-									self.commands[v.name] = v
+									if v.ready and type(v.ready) == "function" then
+										v.ready(lm, Essentials)
+									end
+									if not v.name and not v.fn then
+										newfolder[n] = v
+									else
+										newfolder[v.name] = v
+									end
 								end
 								if typeof(v) == "Instance" and v:IsA("Folder") then
-									self:load(v:GetChildren())
+									self:load(v.Name, v:GetChildren(), newfolder)
 								end
 							end
 						end
 				
-						lm:load(Folder)
-						
+						lm:load(Folder.Name, Folder:GetChildren())
+						print(game:GetService("HttpService"):JSONEncode(lm))
 						lm.io = {}
 
 						lm.io.read = function()
@@ -63,7 +79,27 @@
 							if not s then Essentials.Console.error(m) end
 							return r
 						end
-				
+
+						local function recurseTable(tbl, func)
+							for index, value in pairs(tbl) do
+								if type(value) == 'table' and not value.name and not value.fn then
+									recurseTable(value, func)
+								else
+									func(index, value)
+								end
+							end
+						end
+						
+						local allcommands = {};
+						recurseTable(lm.commands, function(i, v)
+							print(v)
+							if type(v) == "table" and not v.__isDir then
+								 allcommands[v.name] = v
+							end
+						end)
+
+						print(game:GetService("HttpService"):JSONEncode(allcommands))
+
 						local function parseCmd(plr, arg, o)
 							print(arg)
 							arg = string.split(arg," ")
@@ -73,42 +109,49 @@
 							table.remove(args,1)
 							if command == "cmds" then 
 								local length = 0
-								for i, v in pairs(lm.commands) do
+								local allnames = {}
+								for i, v in pairs(allcommands) do
 									length += 1
+									table.insert(allnames, v.name)
 								end
-								local toprint = {}
-								for i,v in pairs(lm.commands) do
-									table.insert(toprint, v.name)
-								end
-								toprint = table.concat(toprint,", ")
-								Essentials.Console.info(length.." commands: "..toprint)
-								return lm.commands
+								Essentials.Console.info(length.." commands: "..table.concat(allnames,", "))
+								return table.concat(allnames,", ")
 							elseif command == "cmd" then
-								if lm.commands[args[1]] == nil then
+								if allcommands[args[1]] == nil then
 									Essentials.Console.warn("Command '"..args[1].."' not found")
 								else
-									Essentials.Console.info("Description: "..lm.commands[args[1]].desc,"Usage: "..lm.commands[args[1]].usage)
+									Essentials.Console.info("Description: "..allcommands[args[1]].desc,"Usage: "..allcommands[args[1]].usage)
 								end
 							else
-								if lm.commands[command] == nil then
+								if allcommands[command] == nil then
 									if lm.xfs.exists(command) then
 										local filetype = string.split(command,".")
 										filetype = filetype[#filetype]
-										if filetype == "luac" then
-											lm:execute(plr, lm.commands["luau"],{"interpret",command})
+										if lm.fileTypeBindings and lm.fileTypeBindings[filetype] then
+											--[[
+												
+											lm.fileTypeBindings[filetype] = {
+												command = "luau",
+												args = {
+													"interpret" -- insert file arg
+												}
+											}
+											
+											]]
+
+											lm:execute(plr, allcommands[lm.fileTypeBindings[filetype].command],table.pack(table.unpack(lm.fileTypeBindings[filetype].args), command))
 										elseif filetype == "ch" then
 											task.wait() -- in case some questionable person writes a batch file that reads itself, just LeftCtrl+RightAlt+F5 to reboot
 											local source = lm.xfs.read(command)
 											source = string.gsub(source, "$args", table.concat(args))
-											lm:parseCommand()
+											lm:parseCommand(source)
 										end
 									else
 										Essentials.Console.warn("'"..command.."' is not recognized as an internal or external command, operable program or batch file.")
-
 									end
 								else
-									local r = lm:execute(plr, lm.commands[command],args);
-									if r and not o and lm.commands[command].displayOutput then 
+									local r = lm:execute(plr, allcommands[command],args);
+									if r and not o and allcommands[command].displayOutput then 
 										Essentials.Console.info(r) 
 									end
 									return r
@@ -142,7 +185,7 @@
 									end
 									prevRCmd = parseCmd(plr, v, omit)
 								end
-								if fLStr[2] then self:execute(plr, self.commands["output"],{fLStr[2], prevRCmd}) end
+								if fLStr[2] then self:execute(plr, allcommands["output"],{fLStr[2], prevRCmd}) end
 							end
 				
 				
@@ -185,7 +228,11 @@
 							end
 				
 						end)
-				
+						
+						if Essentials.Freestore then
+							Essentials.Freestore["pCsi"] = lm
+						end
+
 					end
 				
 					function Efile:Stop()

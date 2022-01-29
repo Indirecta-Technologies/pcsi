@@ -1,4 +1,3 @@
-local xfs = require(script.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
 
 local cmd = {
 	name = script.Name,
@@ -6,7 +5,7 @@ local cmd = {
 	displayOutput = true,
 	usage = [[$ ]],
 	fn = function(plr, pCsi, essentials, args)
-		return xfs.fullCwd()
+		return pCsi.xfs.fullCwd()
 	end,
 }
 

@@ -1,4 +1,3 @@
-local xfs = require(script.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
 
 local cmd = {
 	name = script.Name,
@@ -7,23 +6,23 @@ local cmd = {
 	fn = function(plr, pCsi, essentials, args)
 		if args[1] == "-m" then
 			local buffer = {}
-			for obj in xfs.list() do
+			for obj in pCsi.xfs.list() do
 				local bytes = xfs:totalBytesInInstance(obj.Name)
 				bytes = xfs:formatBytesToUnits(bytes)
-				table.insert(buffer, obj.Name.."; Size: "..bytes.."; Type: "..(xfs.type(obj.Name) or "?").."; Mime: "..xfs:fileType(obj.Name))				
+				table.insert(buffer, obj.Name.."; Size: "..bytes.."; Type: "..(pCsi.xfs.type(obj.Name) or "?").."; Mime: "..xfs:fileType(obj.Name))				
 			end
 			buffer = table.concat(buffer,";\n")
 			essentials.Console.info(buffer)
 		else
 			local buffer = {}
 			local i = 0
-			for obj in xfs.list() do
+			for obj in pCsi.xfs.list() do
 				local name = obj.Name
-				if xfs.type(obj.Name) == "Folder" then
+				if pCsi.xfs.type(obj.Name) == "Folder" then
 					name = "<font color='rgb(28, 119, 255)'>"..name.."</font>"
-				elseif xfs.type(obj.Name) == "File" then
+				elseif pCsi.xfs.type(obj.Name) == "File" then
 					name = "<font color='rgb(39, 175, 55)'>"..name.."</font>"
-				elseif xfs.type(obj.Name) == "Link" then
+				elseif pCsi.xfs.type(obj.Name) == "Link" then
 					name = "<font color='rgb(45, 221, 210)'>"..name.."</font>"
 				end
 				

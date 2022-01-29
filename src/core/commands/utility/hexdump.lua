@@ -1,4 +1,3 @@
-local xfs = require(script.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
 
 
 local cmd = {
@@ -23,8 +22,8 @@ local cmd = {
 			return buffer
 		end
 		
-		if xfs.exists(table.concat(args, " ")) then
-			return hex_dump(xfs.read(table.concat(args, " ")))
+		if pCsi.xfs.exists(table.concat(args, " ")) then
+			return hex_dump(pCsi.xfs.read(table.concat(args, " ")))
 		else
 			return hex_dump(table.concat(args, " "))
 		end

@@ -1,4 +1,3 @@
-local xfs = require(script.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
 
 local cmd = {
 	name = script.Name,
@@ -8,11 +7,11 @@ local cmd = {
 		local file = args[1]
 		table.remove(args, 1)
 		local text = table.concat(args, " ")
-		if xfs.exists(file) then
-			xfs.append(file, text)
+		if pCsi.xfs.exists(file) then
+			pCsi.xfs.append(file, text)
 		else
-			xfs.mkfile(file)
-			xfs.append(file, text)
+			pCsi.xfs.mkfile(file)
+			pCsi.xfs.append(file, text)
 		end
 	end,
 }

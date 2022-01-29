@@ -7,6 +7,13 @@ local cmd = {
 	desc = [[Run luau instructions in a sandboxed enviroment]],
 	usage = "$ luau compile|interpret|environment (filename) ",
 	displayOutput = false,
+	ready = function(pCsi, essentials)
+		pCsi.fileTypeBindings["luau"] = {
+			command = "luau",
+			args = {
+			}
+		}
+	end, 
 	fn = function(plr, pCsi, essentials, args)
 		-- lua.lua - Lua 5.1 interpreter (lua.c) reimplemented in Lua.
 		--
@@ -45,11 +52,12 @@ local cmd = {
 		local xpcall = xpcall
 		local string_format = string.format
 		local string_sub = string.sub
-		local olderr = error
 		local error = function(...) 
-			local args = table.concat(...)
+			local args = table.concat({...})
 			args = args:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;")
-			olderr(args)
+			task.spawn(function()
+				essentials.Console.error(args)
+			end)
 		end
 
 		local progname = LUA_PROGNAME
@@ -78,11 +86,13 @@ local cmd = {
 		environment.spawn = task.spawn
 
 		local tbl = {}
+		local exited = false
 		local osmt = {
 				__index = function(t, i)
 					if i == "exit" then
 						return function(...)
 							pCsi.parseCommand = oldparse
+							exited = true
 							return
 						end
 					elseif i == "getenv" then
@@ -219,7 +229,7 @@ local cmd = {
 		
 		local function dofile(name)
 			if not name then return nil end
-			local s = xfs.read(name)
+			local s = pCsi.xfs.read(name)
 			local f, msg = dostring(s, name)
 			if f then
 				f, msg = docall(f)
@@ -320,7 +330,7 @@ local cmd = {
 		local function dotty()
 			local oldprogname = progname
 			progname = nil
-			while true do
+			while not exited do
 				local result
 				local status, msg = loadline()
 				if status == -1 then

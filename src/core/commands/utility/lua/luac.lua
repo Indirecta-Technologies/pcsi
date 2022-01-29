@@ -156,7 +156,7 @@ Available options are:
 		local filenames = {}
 		for i, filename in ipairs(chunks) do
 			filenames[i] = filename
-			chunks[i] = assert(xfs.read(filename))
+			chunks[i] = assert(pCsi.xfs.read(filename))
 		end
 
 		if parseonly then
@@ -178,10 +178,10 @@ Available options are:
 		end
 
 		-- Output.
-		if not xfs.exists(outfile) then
-			xfs.mkfile(outfile)
+		if not pCsi.xfs.exists(outfile) then
+			pCsi.xfs.mkfile(outfile)
 		end
-		xfs.write(outfile, luac(chunks, outfile, nil))
+		pCsi.xfs.write(outfile, luac(chunks, outfile, nil))
 	end,
 }
 
