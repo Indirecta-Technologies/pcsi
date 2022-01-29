@@ -166,7 +166,7 @@
 							Essentials.Console.info("┌ ".. time)
 							task.spawn(function()
 								wait(0.3)
-								Essentials.Console.info("└ "..self.xfs.fullCwd().."> "..fEStr)
+								Essentials.Console.info("└ "..self.xfs.fullCwd().."> "..fEStr:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;"))
 							end)
 							local fLStr = string.split(fEStr," > ") or fEStr
 							
