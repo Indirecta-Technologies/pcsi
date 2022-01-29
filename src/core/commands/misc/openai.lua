@@ -21,6 +21,18 @@ local cmd = {
               })
 		})
 		print(request.Body)
+
+		--[[{
+    "error": {
+        "message": "Incorrect API key provided: sk-XpEin***************************************MIlM. You can find your API key at https://beta.openai.com.",
+        "type": "invalid_request_error",
+        "param": null,
+        "code": null
+    }]]
+
+		if request.Body.error then
+			return request.Body.error.type.." error: "..request.Body.error.message
+		end
         local newbody = http:JSONDecode(request.Body).choices[1]
 
         local TextService = game:GetService("TextService")
