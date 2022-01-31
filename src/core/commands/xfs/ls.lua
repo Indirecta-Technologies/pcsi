@@ -7,9 +7,9 @@ local cmd = {
 		if args[1] == "-m" then
 			local buffer = {}
 			for obj in pCsi.xfs.list() do
-				local bytes = xfs:totalBytesInInstance(obj.Name)
-				bytes = xfs:formatBytesToUnits(bytes)
-				table.insert(buffer, obj.Name.."; Size: "..bytes.."; Type: "..(pCsi.xfs.type(obj.Name) or "?").."; Mime: "..xfs:fileType(obj.Name))				
+				local bytes = pCsi.xfs:totalBytesInInstance(obj.Name)
+				bytes = pCsi.xfs:formatBytesToUnits(bytes)
+				table.insert(buffer, obj.Name.."; Size: "..bytes.."; Type: "..(pCsi.xfs.type(obj.Name) or "?").."; Mime: "..pCsi.xfs:fileType(obj.Name))				
 			end
 			buffer = table.concat(buffer,";\n")
 			essentials.Console.info(buffer)
@@ -26,7 +26,7 @@ local cmd = {
 					name = "<font color='rgb(45, 221, 210)'>"..name.."</font>"
 				end
 				
-				table.insert(buffer, (i == 4 and name.."\n" or name))		
+				table.insert(buffer, (i == 4 and name.."\n" or name))	
 				i += 1
 			end
 			buffer = table.concat(buffer,"  ")

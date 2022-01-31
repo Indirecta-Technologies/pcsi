@@ -28,17 +28,23 @@
 							end
 							local newfolder = parent[name]
 							for i,v in pairs(folder) do
+								if not v then continue end
 								if typeof(v) == "Instance" and v:IsA("ModuleScript") then
 									local n = v.Name
 									v = require(v)
-									if v.ready and type(v.ready) == "function" then
-										v.ready(lm, Essentials)
-									end
-									if not v.name and not v.fn then
+									if typeof(v) == "table" then 
+										if v.ready and type(v.ready) == "function" then
+											v.ready(lm, Essentials)
+										end
+										if not v.name and not v.fn then
+											newfolder[n] = v
+										else
+											newfolder[v.name] = v
+										end
+									elseif typeof(v) == "function" then 
 										newfolder[n] = v
-									else
-										newfolder[v.name] = v
 									end
+								
 								end
 								if typeof(v) == "Instance" and v:IsA("Folder") then
 									self:load(v.Name, v:GetChildren(), newfolder)
@@ -46,7 +52,9 @@
 							end
 						end
 				
+						lm:load(script.libs.Name, script.libs:GetChildren())
 						lm:load(Folder.Name, Folder:GetChildren())
+
 						print(game:GetService("HttpService"):JSONEncode(lm))
 						lm.io = {}
 

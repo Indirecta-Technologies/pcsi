@@ -8,8 +8,8 @@
         "$className": "Folder",
         "commandline.efile": {
           "$path": "src/programs/commandline.efile",
-          "lib" : {
-            "$path": "src/core/lib"
+          "libs" : {
+            "$path": "src/core/libs"
           },
           "commands" : {
             "$path": "src/core/commands"

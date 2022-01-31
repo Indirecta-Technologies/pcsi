@@ -6,7 +6,7 @@ local cmd = {
 	fn = function(pCsi, essentials, argse)
 		local oldparse = pCsi.parseCommand
 		local loggedIn = true
-		local sha256 = require(script.Parent.Parent.Parent.lib.sha_256)
+		local sha256 = pCsi.libs.sha_256
 
 		local password = "myPassword123"
         local salt = "@@##!/()89732423mySLalt##!ç§*è§VERYNICEk"

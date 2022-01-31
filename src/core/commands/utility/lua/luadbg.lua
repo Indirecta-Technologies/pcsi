@@ -1,5 +1,4 @@
-local xfs = require(script.Parent.Parent.Parent.Parent.fs:WaitForChild("xfsm",12))
-local luadbg = require(script.Parent.Parent.Parent.Parent.lib.luaDbg)
+
 
 local cmd = {
 	name = script.Name,
@@ -7,7 +6,8 @@ local cmd = {
 	usage = "$ luadbg -e filename", --TO REDO
 	displayOutput = true,
 	fn = function(plr, pCsi, essentials, args)
-		
+		local luadbg = pCsi.libs.luaDbg
+
 		if args[1] and args[1] == "-e" then --examine
 			local name = args[2]
 			local bytecode;

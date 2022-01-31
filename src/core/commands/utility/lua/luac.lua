@@ -1,7 +1,4 @@
-local xfs = require(script.Parent.Parent.Parent.Parent.fs:WaitForChild("xfsm", 12))
-local luac = require(script.Parent.Parent.Parent.Parent.lib.luac)
-local fione = require(script.Parent.Parent.Parent.Parent.lib.fione)
-local luadbg = require(script.Parent.Parent.Parent.Parent.lib.luaDbg)
+
 
 local cmd = {
 	name = script.Name,
@@ -23,6 +20,11 @@ local cmd = {
 	]], --TO REDO
 	displayOutput = false,
 	fn = function(plr, pCsi, essentials, args)
+
+		local luac = pCsi.libs.luac
+		local fione = pCsi.libs.fione
+		local luadbg = pCsi.libs.luaDbg
+
 		-- luac.lua - partial reimplementation of luac in Lua.
 		-- http://lua-users.org/wiki/LuaCompilerInLua
 		-- David Manura et al.

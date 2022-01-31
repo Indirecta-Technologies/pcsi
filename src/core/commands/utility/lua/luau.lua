@@ -1,6 +1,3 @@
-local xfs = require(script.Parent.Parent.Parent.Parent.fs:WaitForChild("xfsm", 12))
-local luac = require(script.Parent.Parent.Parent.Parent.lib.luac)
-local fione = require(script.Parent.Parent.Parent.Parent.lib.fione)
 
 local cmd = {
 	name = script.Name,
@@ -15,6 +12,10 @@ local cmd = {
 		}
 	end, 
 	fn = function(plr, pCsi, essentials, args)
+
+		local luac = pCsi.libs.luac
+		local fione = pCsi.libs.fione
+
 		-- lua.lua - Lua 5.1 interpreter (lua.c) reimplemented in Lua.
 		--
 		-- WARNING: This is not completed but was quickly done just an experiment.

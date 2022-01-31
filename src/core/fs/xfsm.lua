@@ -375,7 +375,7 @@ function module.compress(name)
 	assert(module.type(name) == "File", name.." must be a file.")
 	assert(module.mode(name) == "w+r" or module.mode(name) == "all", "incorrect mode. (expected all|w+r, got "..module.mode(name)..")")
 	
-	local xcompress = require(script.Parent.Parent.lib.xcompress)
+	local xcompress = require(script.Parent.Parent.libs.xcompress)
 	local uncompressed = module.read(name)
 	
 	module.write(name, xcompress.compress(uncompressed))
@@ -389,7 +389,7 @@ function module.append(name, text)
 	assert(type(text) == "string", "invalid parameter type, expected string, got "..type(text))
 	assert(module.type(name) == "File", name.." must be a file.")
 	assert(module.mode(name) == "a" or module.mode(name) == "a+r" or module.mode(name) == "all", "incorrect mode. (expected a|a+r, got "..module.mode(name)..")")
-	local xcompress = require(script.Parent.Parent.lib.xcompress)
+	local xcompress = require(script.Parent.Parent.libs.xcompress)
 	local buffer;
 	
 	if module.currentIndex[name]:GetAttribute("xcompress") == true then
@@ -449,7 +449,7 @@ function module.read(name)
 	assert(module.type(name) == "File" or module.type(name) == "Link" , name.." must be a file.")
 	
 	assert(module.mode(name) == "r" or module.mode(name) == "w+r" or module.mode(name) == "a+r" or module.mode(name) == "all", "incorrect mode. (expected r|w+r|a+r, got "..module.mode(name)..")")
-	local xcompress = require(script.Parent.Parent.lib.xcompress)
+	local xcompress = require(script.Parent.Parent.libs.xcompress)
 	
 	
 	 
