@@ -55,13 +55,12 @@
 						lm:load(script.libs.Name, script.libs:GetChildren())
 						lm:load(Folder.Name, Folder:GetChildren())
 
-						print(game:GetService("HttpService"):JSONEncode(lm))
 						lm.io = {}
 
 						lm.io.read = function()
 							local input = nil
 							local oldparse = lm.parseCommand
-							function lm:parseCommand(...)
+							function lm:parseCommand(plr, ...)
 								input = {...}
 								table.remove(input, 1)
 								input = table.unpack(input)
@@ -100,19 +99,15 @@
 						
 						local allcommands = {};
 						recurseTable(lm.commands, function(i, v)
-							print(v)
 							if type(v) == "table" and not v.__isDir then
 								 allcommands[v.name] = v
 							end
 						end)
 
-						print(game:GetService("HttpService"):JSONEncode(allcommands))
-
 						local function parseCmd(plr, arg, o)
-							print(arg)
+							print(plr.Name..": Command '"..arg.."'; Omit: "..tostring(o))
 							arg = string.split(arg," ")
 							local command = arg[1]
-							print(command)
 							local args = arg
 							table.remove(args,1)
 							if command == "cmds" then 
@@ -152,7 +147,7 @@
 											task.wait() -- in case some questionable person writes a batch file that reads itself, just LeftCtrl+RightAlt+F5 to reboot
 											local source = lm.xfs.read(command)
 											source = string.gsub(source, "$args", table.concat(args))
-											lm:parseCommand(source)
+											lm:parseCommand(plr, source)
 										end
 									else
 										Essentials.Console.warn("'"..command.."' is not recognized as an internal or external command, operable program or batch file.")

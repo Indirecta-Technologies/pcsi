@@ -19,7 +19,7 @@ local cmd = {
 		essentials.Console.info("** USER ACCOUNT CONTROL **")
 		essentials.Console.info("log(o)ut  -  (q)uit")
 
-		function pCsi:parseCommand(args)
+		function pCsi:parseCommand(plr, args)
 			args = string.split(args, " ")
 			if args[1] == "q" or args[1] == "quit" and loggedIn then
 				self.parseCommand = oldparse

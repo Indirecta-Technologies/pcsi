@@ -6,7 +6,6 @@ local cmd = {
 	fn = function(plr, pCsi, essentials, args)
 		-- feel free to add more globals to your environment,
 		-- but it may pose a security risk
-		local oldparse = pCsi.parseCommand
 		local board = {
 			{ 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0 },
@@ -277,21 +276,18 @@ local cmd = {
 				the_player_makes_a_move(board, "Human", player_symbol)
 				if this_player_has_won(board, player_symbol) then
 					essentials.Console.info("** " .. player_symbol .. ":HUMAN WINS **")
-					pCsi.parseCommand = oldparse
 					game_in_play = false
 				end
 			else
 				the_computer_makes_a_move(board, player_symbol)
 				if this_player_has_won(board, player_symbol) then
 					essentials.Console.info("** " .. get_other_symbol(player_symbol) .. ":COMPUTER WINS **")
-					pCsi.parseCommand = oldparse
 					game_in_play = false
 				end
 			end
 
 			if game_in_play and no_moves_left(board) then
 				essentials.Console.info("** DRAW! **")
-				pCsi.parseCommand = oldparse
 				game_in_play = false
 			else
 				player_symbol = get_other_symbol(player_symbol)

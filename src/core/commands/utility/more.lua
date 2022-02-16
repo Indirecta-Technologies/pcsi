@@ -39,7 +39,7 @@ local cmd = {
 				essentials.Console.info("SPACE + ENTER = MORE | "..math.round((mainI/#lines)*1000)/10 .. "% | L"..mainI)
 				i = 0
 				local inputted = false
-				function pCsi:parseCommand(args)
+				function pCsi:parseCommand(plr, args)
 					inputted = true
 				end
 				repeat task.wait() until inputted
