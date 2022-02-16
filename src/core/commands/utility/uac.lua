@@ -3,17 +3,17 @@ local cmd = {
 	desc = [[User Account Control]],
 	usage = [[$ uac]],
 	displayOutput = true,
-	fn = function(pCsi, essentials, argse)
+	fn = function(plr, pCsi, essentials, argse)
 		local oldparse = pCsi.parseCommand
 		local loggedIn = true
+
+		math.randomseed(os.time()*plr.UserId+tick())
+
 		local sha256 = pCsi.libs.sha_256
+        local salt = "@@##!/()89732423mySLalt##!ç§*è§VERYNICEk"..math.random(1111,999999)
 
-		local password = "myPassword123"
-        local salt = "@@##!/()89732423mySLalt##!ç§*è§VERYNICEk"
-
-		local paswLength = #password
-		local pasw = sha256().updateStr(salt..password..salt).finish().asHex()
-		password = nil
+		local pasw = sha256().updateStr(salt.."myPassword123"..salt).finish().asHex()
+		salt = nil
 
         task.wait(0.9)
 		essentials.Console.info("** USER ACCOUNT CONTROL **")
@@ -34,7 +34,7 @@ local cmd = {
 					self.parseCommand = oldparse
 					loggedIn = true
 				else
-					essentials.Console.info("uac :: Wrong password (" .. paswLength .. ")")
+					essentials.Console.info("uac :: Wrong password")
 				end
 			elseif loggedIn then
 				essentials.Console.info("uac :: Invalid option; Use q/quit to exit")
