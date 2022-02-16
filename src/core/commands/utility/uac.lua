@@ -3,7 +3,7 @@ local cmd = {
 	desc = [[User Account Control]],
 	usage = [[$ uac]],
 	displayOutput = true,
-	fn = function(plr, pCsi, essentials, argse)
+	fn = function(plr, pCsi, essentials, args)
 		local oldparse = pCsi.parseCommand
 		local loggedIn = true
 
