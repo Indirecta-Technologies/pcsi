@@ -28,6 +28,7 @@ local cmd = {
 				essentials.Console.info("uac :: Terminal Locked; Input pasw to unlock")
 				loggedIn = false
 			elseif not loggedIn then
+				print(salt, args)
 				local newpass = sha256().updateStr(salt..table.concat(args, " ")..salt).finish().asHex()
 				if newpass == pasw then
 					essentials.Console.info("uac :: Terminal unlocked")

@@ -62,6 +62,7 @@ local cmd = {
 		end
 
 		local progname = LUA_PROGNAME
+		local osenv = getfenv()
 
 		local environment = {}
 
@@ -448,7 +449,6 @@ local cmd = {
 			return true
 		end
 
-		local osenv = getfenv()
 		local function handle_luainit()
 			local init = osenv["LUA_INIT"]
 			if init == nil then

@@ -60,7 +60,7 @@
 						lm.io.read = function()
 							local input = nil
 							local oldparse = lm.parseCommand
-							function lm:parseCommand(plr, ...)
+							function lm:parseCommand(...)
 								input = {...}
 								table.remove(input, 1)
 								input = table.unpack(input)
