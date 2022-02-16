@@ -327,7 +327,7 @@ function module.diff(file1, file2)
 end
 
 function module.mode(name)
-	assert(type(name) == "string", "invalid parameter type, expected string, got "..type(name))
+	assert(name and type(name) == "string", "invalid parameter type, expected string, got "..type(name))
 	assert(module.type(name) == "File", name.." must be a file.")
 	return module.currentIndex[name]:GetAttribute("Mode")
 end
@@ -448,7 +448,7 @@ function module.read(name)
 	assert(type(name) == "string", "invalid parameter type, expected string, got "..type(name))
 	assert(module.type(name) == "File" or module.type(name) == "Link" , name.." must be a file.")
 	
-	assert(module.mode(name) == "r" or module.mode(name) == "w+r" or module.mode(name) == "a+r" or module.mode(name) == "all", "incorrect mode. (expected r|w+r|a+r, got "..module.mode(name)..")")
+	assert(name and module.mode(name) == "r" or module.mode(name) == "w+r" or module.mode(name) == "a+r" or module.mode(name) == "all", "incorrect mode. (expected r|w+r|a+r, got "..module.mode(name)..")")
 	local xcompress = require(script.Parent.Parent.libs.xcompress)
 	
 	
