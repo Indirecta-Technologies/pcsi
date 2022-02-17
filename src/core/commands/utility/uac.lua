@@ -36,10 +36,10 @@ local cmd = {
 				local newwwpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
 				if newwwpass == newwpass then
 					pasw = newwwpass; loggedIn = false; essentials.Console.info("uac :: Changed password and locked out")
-				else return essentials.Console.info("uac :: Wrong password")
+				else return essentials.Console.info("uac :: <b>"..plr.Name.."</b>, wrong password")
 				end
 
-				else return essentials.Console.info("uac :: Wrong password")
+				else return essentials.Console.info("uac :: <b>"..plr.Name.."</b>, wrong password")
 				end
 			elseif not loggedIn then
 				print(salt, args)
@@ -49,7 +49,7 @@ local cmd = {
 					self.parseCommand = oldparse
 					loggedIn = true
 				else
-					essentials.Console.info("uac :: Wrong password")
+					essentials.Console.info("uac :: <b>"..plr.Name.."</b>, wrong password")
 				end
 			elseif loggedIn then
 				essentials.Console.info("uac :: Invalid option; Use q/quit to exit")
