@@ -62,36 +62,40 @@ local cmd = {
             local peer = peers[data.player]
             data.player = game:GetService("Players"):GetPlayerByUserId(data.player)
             
-			if data.header == "startSession" and data.room == room and not peer then
+			if data.header == "startSession" and data.room == room then
 				peers[data.player.UserId] = {data.player, ComputeNameColor(data.player.Name)}
                 peer = peers[data.player.UserId]
                 local text = 
-                '(<b><font color="rgb('..  math.round(peer[2].R*255)  .. ','.. math.round(peer[2].G*255) .. ','.. math.round(peer[2].B*255) ..')">'..
+                '<b><font color="rgb('..  math.round(peer[2].R*255)  .. ','.. math.round(peer[2].G*255) .. ','.. math.round(peer[2].B*255) ..')">'..
                 data.player.Name..
                 "</font></b> joined";
 
 
-                print(text); pCsi.io.write(text)
+                pCsi.io.write(text)
 
-            elseif data.header == "endSession" and data.room == room and peer then
+            elseif data.header == "endSession" and data.room == room then
                local text =
-                    "(<b><font color='rgb("..  math.round(peer[2].R*255)  .. ",".. math.round(peer[2].G*255) .. ",".. math.round(peer[2].B*255) ..")'>"..
+                    "<b><font color='rgb("..  math.round(peer[2].R*255)  .. ",".. math.round(peer[2].G*255) .. ",".. math.round(peer[2].B*255) ..")'>"..
                     data.player.Name..
                     "</font></b> left";
 
-                 print(text); pCsi.io.write(text)
+                pCsi.io.write(text)
 
                 peers[data.player.UserId] = nil
-            elseif data.header == "messageSession" and data.room == room and peer and data.message and peer then
+            elseif data.header == "messageSession" and data.room == room and data.message then
                 local text =
                     "(<b><font color='rgb("..  math.round(peer[2].R*255)  .. ",".. math.round(peer[2].G*255) .. ",".. math.round(peer[2].B*255) ..")'>"
                     ..data.player.Name..
                     "</font></b>): "..
                     data.message:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;");
-                print(text); pCsi.io.write(text)
+                pCsi.io.write(text)
 			end
 
 		end)
+
+        local text =
+        "Joined chatroom <b>"..room.."</b>), use '!q' to leave"
+        pCsi.io.write(text)
 
 		local function startSession(plra)
 			remote:Fire({
@@ -122,10 +126,8 @@ local cmd = {
 			input = { ... }
 			local plra = input[1]
 			table.remove(input, 1)
+            input = table.concat(input)
 			if input == "!quit" or input == "!q" then
-				pCsi.io.write(
-					plr.Name .. " " .. (plr == plra and "ended his session" or "'s session was ended by " .. plra.Name)
-				)
 				endSession(plra)
 
 				pCsi.parseCommand = oldparse
@@ -135,11 +137,7 @@ local cmd = {
 					"This chat session is being used by " .. plr.Name .. ", consider ending the session? '!quit' "
 				)
 			end
-			input = processMessage(plra, table.concat(input, " "))
-
-			--local ss, fm = pcall(function()
-			--	pCsi.io.write("[" .. plra.UserId .. " " .. plra.Name .. "] :: " .. input .. " :: ")
-			--end)
+			input = processMessage(plra, input)
 		end
 	end,
 }
