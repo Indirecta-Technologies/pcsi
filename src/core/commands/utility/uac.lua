@@ -13,11 +13,10 @@ local cmd = {
         local salt = "@@##!/()89732423mySLalt##!ç§*è§VERYNICEk"..math.random(1111,999999)
 
 		local pasw = sha256().updateStr(salt.."myPassword123"..salt).finish().asHex()
-		salt = nil
 
         task.wait(0.9)
 		essentials.Console.info("** USER ACCOUNT CONTROL **")
-		essentials.Console.info("log(o)ut  -  (q)uit")
+		essentials.Console.info("log(o)ut  -  (q)uit  - (c)hange")
 
 		function pCsi:parseCommand(plr, args)
 			args = string.split(args, " ")
@@ -27,6 +26,21 @@ local cmd = {
 			elseif args[1] == "o" or args[1] == "logout" and loggedIn then
 				essentials.Console.info("uac :: Terminal Locked; Input pasw to unlock")
 				loggedIn = false
+			elseif args[1] == "c" or args[1] == "change" and loggedIn then
+				essentials.Console.info("uac :: Old password: ")
+				local newpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
+				if newpass == pasw then
+				essentials.Console.info("uac :: New password: ")
+				local newwpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
+				essentials.Console.info("uac :: Repeat: ")
+				local newwwpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
+				if newwwpass == newwpass then
+					pasw = newwwpass; loggedIn = false
+				else return essentials.Console.info("uac :: Wrong password")
+				end
+
+				else return essentials.Console.info("uac :: Wrong password")
+				end
 			elseif not loggedIn then
 				print(salt, args)
 				local newpass = sha256().updateStr(salt..table.concat(args, " ")..salt).finish().asHex()
