@@ -30,7 +30,7 @@ local cmd = {
 			for i,v in pairs(essentials.Efile:GetAllEfiles()) do
 				local cstat = coroutine.status(v.coroutine)
 				local cdate = os.date("%Y%m%d %H:%M:%S",v.startTime)
-				local cdur = v.endTime and v.endTime-v.startTime or "0"
+				local cdur = math.round((v.endTime and v.endTime-v.startTime or 0)*10)/10
 				buffer = buffer.."\n".."| "..v.index.."° | "..v.component.Name.."| ID"..v.id.." | "..#v.innerFunctions.."fns | "..cstat.." | "..cdate.." | "..cdur.." |"
 			end
 			essentials.Console.info(buffer)
@@ -40,13 +40,17 @@ local cmd = {
 				pname = program
 				program = essentials.Efile:GetEfileByName(program)
 				local str = "-- "..pname.." --\n"
-				for i, v in ipairs(program) do
-					if type(v) == "function" then
-						v = coroutine.status(v) or nil
+				for i, v in pairs(program) do
+					if type(v) == "thread" then
+						v = ("co, ") .. (coroutine.status(v) or "?")
+					elseif  type(v) == "function" then
+						v = "fn"
+					elseif type(v) == "table" then
+						v = game:GetService("HttpService"):JSONEncode(v)
 					end
 					if v == nil then continue end
 					
-					str = str..i..": "..tostring(v)
+					str = str..i..": "..tostring(v).."\n"
 				end
 				essentials.Console.info(str)
 			else
