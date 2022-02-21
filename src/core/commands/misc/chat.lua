@@ -107,7 +107,7 @@ local cmd = {
 			end
 		end)
 
-		local text = "Joined chatroom <b>" .. room .. "</b>), use '!q' to leave"
+		local text = "Joined chatroom <b>" .. room .. "</b>, use '!q' to leave"
 		pCsi.io.write(text)
 
 		local function startSession(plra)

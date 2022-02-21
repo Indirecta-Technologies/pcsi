@@ -24,8 +24,9 @@ local cmd = {
 				self.parseCommand = oldparse
 				return
 			elseif args[1] == "o" or args[1] == "logout" and loggedIn then
-				essentials.Console.info("uac :: Terminal Locked; Input pasw to unlock")
 				loggedIn = false
+				essentials.Output:OutputToAll("ClearScreen")
+				essentials.Console.info("uac :: Terminal Locked; Input pasw to unlock")
 			elseif args[1] == "c" or args[1] == "change" and loggedIn then
 				essentials.Console.info("uac :: Old password: ")
 				local newpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
@@ -35,7 +36,7 @@ local cmd = {
 				essentials.Console.info("uac :: Repeat: ")
 				local newwwpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
 				if newwwpass == newwpass then
-					pasw = newwwpass; loggedIn = false; essentials.Console.info("uac :: Changed password and locked out")
+					pasw = newwwpass; loggedIn = false; essentials.Output:OutputToAll("ClearScreen"); essentials.Console.info("uac :: Changed password and locked out")
 				else return essentials.Console.info("uac :: <b>"..plr.Name.."</b>, wrong password")
 				end
 
