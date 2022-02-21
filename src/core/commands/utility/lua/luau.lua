@@ -204,7 +204,7 @@ local cmd = {
 		local function docall(f, ...)
 			local tp = { ... } -- no need in tuple (string arguments only)
 			local F = function()
-				return f(unpack(tp))
+				return type(f) == "function" and f(unpack(tp)) or f
 			end
 			setsignal(true)
 			local result = tuple(xpcall(F, traceback))
@@ -217,8 +217,8 @@ local cmd = {
 		end
 
 
-		local function dostring(s, name)
-			local bytecode, err = luac(s, name)
+		local function dostring(s, name, isbc)
+			local bytecode, err = isbc and s or luac(s, name)
 			
 			local f, msg = fione(bytecode, nil, environment)
 			
@@ -231,9 +231,10 @@ local cmd = {
 		
 		local function dofile(name)
 			if not name then return nil end
+			local hj = pCsi.xfs:fileType(name) == "application/x-lua-bytecode"
 			local s = pCsi.xfs.read(name)
-			local f, msg = dostring(s, name)
-			if f then
+			local f, msg = dostring(s, name, hj)
+			if type(f) == "function" then
 				f, msg = docall(f)
 			end
 			return report(f, msg)

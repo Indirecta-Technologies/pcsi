@@ -36,7 +36,7 @@ local cmd = {
 		end
 		
 		local device;
-		
+		print(table.concat(args,"; "))
 		if args[1] == "devices" then
 			local buffer = "\nindex, identifier, name"
 			for i,v in pairs(essentials.Output:GetAllDevices()) do

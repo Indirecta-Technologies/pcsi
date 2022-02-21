@@ -11,6 +11,12 @@
 				   return function(Essentials, Efile)
 					local inputconn;
 					function Efile:Start()
+
+						local error = function(...) 
+							Essentials.Console.error("<b>pcsi</b>\nCommand line encountered an error: "..table.concat(...).."\n"..os.date("%c",tick()))
+						end
+						
+
 						local Folder = script.commands
 						local config = require(script.Configuration)
 
@@ -213,8 +219,8 @@
 									if stat == 2 then 
 										-- do stuff
 										Essentials.Console.warn("Reloading kernel..")
-										if Essentials.Freestore["PowerManagerService"] then
-											Essentials.Freestore["PowerManagerService"]:reboot()
+										if Essentials.Freestore[0x000A2] then
+											Essentials.Freestore[0x000A2]:reboot()
 										end
 										stat = 0 
 									else stat = 0 end
@@ -233,7 +239,7 @@
 						end)
 						
 						if Essentials.Freestore then
-							Essentials.Freestore["pCsi"] = lm
+							Essentials.Freestore[0x000A3] = lm
 						end
 
 					end
