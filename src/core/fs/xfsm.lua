@@ -430,6 +430,12 @@ module.fileTypes = {
 			{ "pattern", "LuaQ[^ -~\n\t]" },
 		},
 	},
+	["bf"] = {
+		mime = "application/x-brainfudge",
+		matches = {
+			{"pattern", "^[%+%-%.>%<%[%]]+$"}
+		}
+	},
 	["bin"] = {
 		mime = "application/octet-stream",
 		matches = {
@@ -437,7 +443,7 @@ module.fileTypes = {
 		},
 	},
 	["txt"] = {
-		mime = "application/text",
+		mime = "text/plain",
 		matches = {
 			{ "extension", "txt" },
 		},
@@ -464,7 +470,7 @@ function module:fileType(name)
 				matched = self:fileExtension(name) == v[2]
 			end
 		end
-		return matched and k.mime or "?"
+		if matched then return k.mime or "?" else continue end
 	end
 	return "0FT?"
 end

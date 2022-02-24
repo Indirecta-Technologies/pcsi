@@ -107,6 +107,7 @@ local cmd = {
 		local allowoptions = true
 		local iserror = false
 		local parseonly = false
+		local stripd = false
 		while args[1] do
 			if allowoptions and args[1] == "-" then
 				chunks[#chunks + 1] = args[1]
@@ -120,7 +121,7 @@ local cmd = {
 			elseif allowoptions and args[1] == "-p" then
 				parseonly = true
 			elseif allowoptions and args[1] == "-s" then
-				pCsi.io.write("-s option ignored\n")
+				stripd = true
 			elseif allowoptions and args[1] == "-v" then
 				pCsi.io.write(_VERSION .. " Copyright (C) 1994-2008 Lua.org, PUC-Rio\n")
 			elseif allowoptions and args[1] == "--" then
@@ -173,7 +174,7 @@ Available options are:
 			-- though likely unavoidable.
 			local ts = { "local loadstring=loadstring;" }
 			for i, f in ipairs(chunks) do
-				ts[i] = ("loadstring%q(...);"):format(luac(f, filenames[i], nil))
+				ts[i] = ("loadstring%q(...);"):format(luac(f, filenames[i], nil, stripd))
 			end
 			--possible extension: ts[#ts] = 'return ' .. ts[#ts]
 			chunks = assert(table.concat(ts))

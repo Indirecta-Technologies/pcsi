@@ -4238,7 +4238,9 @@ do
 	-- interfacing to yueliang
 	------------------------------------------------------------------------
 
-	function compile(source, name, onErr)
+	
+
+	function compile(source, name, onErr, strip)
 		name = name or 'script'
 		if onErrr then error = function(...)
 			onErr(...)
@@ -4256,7 +4258,7 @@ do
 		-- luaU:make_setS returns a string chunk writer
 		local writer, buff = luaU:make_setS()
 		-- luaU:dump builds a binary chunk
-		luaU:dump(LuaState, func, writer, buff)
+		luaU:dump(LuaState, func, writer, buff, strip) 
 		-- a string.dump equivalent in returned
 
 		return buff.data

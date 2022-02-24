@@ -19,7 +19,6 @@ return function(Essentials, Efile)
 
 			sname = "Pointcove/Indirecta(R) pcsi",
 			vname = "1.2-c61a769",
-
 		})
 
 		Essentials.Console.info(verinfo.sname .. " - " .. verinfo.vname)
@@ -201,7 +200,10 @@ return function(Essentials, Efile)
 			task.spawn(function()
 				wait(0.3)
 				Essentials.Console.info(
-					"└ ".." <b>"..plr.Name.."</b> "
+					"└ "
+						.. "<b>"
+						.. plr.Name
+						.. "</b> "
 						.. self.xfs.fullCwd()
 						.. "&gt; "
 						.. fEStr

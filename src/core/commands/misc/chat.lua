@@ -7,6 +7,8 @@ local cmd = {
 		-- THIS DOES NOT FILTER MESSAGES YET!!!!!!!!!!!!!!!!
 
 		-- Comunicate over a bindable in Server Storage, support authentication and encryption peer to peer (first person to start)?
+		local MessagingService = game:GetService("MessagingService")
+		local topicname = "_xChat"..game.GameId
 		local remote
 
 		remote = game:GetService("ServerStorage"):WaitForChild("_xChat" .. game.JobId, 3)
@@ -50,53 +52,41 @@ local cmd = {
 			return NAME_COLORS[((GetNameValue(pName) + color_offset) % #NAME_COLORS) + 1]
 		end
 
-		remote.Event:Connect(function(data)
 
+		local subscribeSuccess, subscribeConnection = pcall(function()
+			return MessagingService:SubscribeAsync(topicname, function(message)
+			local data = message.Data
 			if not data.header or not data.player then
 				return
 			end
 
-			local peer = peers[data.player]
-			data.player = game:GetService("Players"):GetPlayerByUserId(data.player)
+			local displayname = "<b>?</b>"
+			if data.player then 
+				local color = ComputeNameColor(data.player[2])
+				displayname = '<b><font color="rgb('
+				.. math.round(color.R * 255)
+				.. ","
+				.. math.round(color.G * 255)
+				.. ","
+				.. math.round(color.B * 255)
+				.. ')">'
+				.. data.player[2]
+				.. "</font></b>"
+			end
+		
 
 			if data.header == "startSession" and data.room == room then
-				peers[data.player.UserId] = { data.player, ComputeNameColor(data.player.Name) }
-				peer = peers[data.player.UserId]
-				local text = '<b><font color="rgb('
-					.. math.round(peer[2].R * 255)
-					.. ","
-					.. math.round(peer[2].G * 255)
-					.. ","
-					.. math.round(peer[2].B * 255)
-					.. ')">'
-					.. data.player.Name
-					.. "</font></b> joined"
+				local text = displayname.." joined"
 
 				pCsi.io.write(text)
 			elseif data.header == "endSession" and data.room == room then
-				local text = "<b><font color='rgb("
-					.. math.round(peer[2].R * 255)
-					.. ","
-					.. math.round(peer[2].G * 255)
-					.. ","
-					.. math.round(peer[2].B * 255)
-					.. ")'>"
-					.. data.player.Name
-					.. "</font></b> left"
+				local text = displayname.." left"
 
 				pCsi.io.write(text)
 
 				peers[data.player.UserId] = nil
 			elseif data.header == "messageSession" and data.room == room and data.message then
-				local text = "(<b><font color='rgb("
-					.. math.round(peer[2].R * 255)
-					.. ","
-					.. math.round(peer[2].G * 255)
-					.. ","
-					.. math.round(peer[2].B * 255)
-					.. ")'>"
-					.. data.player.Name
-					.. "</font></b>): "
+				local text = "("..displayname.."): "
 					.. data.message
 						:gsub("&", "&amp;")
 						:gsub("<", "&lt;")
@@ -105,24 +95,36 @@ local cmd = {
 						:gsub("'", "&apos;")
 				pCsi.io.write(text)
 			end
+			end)
 		end)
 
-		local text = "Joined chatroom <b>" .. room .. "</b>, use '!q' to leave"
+
+		local text = "Joined chatroom <b>" .. room:sub(1,18) .. "</b>, use '!q' to leave"
 		pCsi.io.write(text)
 
 		local function startSession(plra)
-			remote:Fire({
-				header = "startSession",
-				room = room,
-				player = plra.UserId,
-			})
+			local publishSuccess, publishResult = pcall(function()
+				MessagingService:PublishAsync(topicname, {
+					header = "startSession",
+					room = room,
+					player = {plra.UserId, plra.Name},
+				})
+			end)
+			if not publishSuccess then
+				warn(publishResult)
+			end
 		end
 		local function endSession(plra)
-			remote:Fire({
-				header = "endSession",
-				room = room,
-				player = plra.UserId,
-			})
+			local publishSuccess, publishResult = pcall(function()
+				MessagingService:PublishAsync(topicname, {
+					header = "endSession",
+					room = room,
+					player = {plra.UserId, plra.Name},
+				})
+			end)
+			if not publishSuccess then
+				warn(publishResult)
+			end
 		end
 
 		local function processMessage(player, message)
@@ -146,12 +148,17 @@ local cmd = {
 				message = string.rep("_", #message)
 			end
 
-			remote:Fire({
-				header = "messageSession",
-				room = room,
-				player = player.UserId,
-				message = message,
-			})
+			local publishSuccess, publishResult = pcall(function()
+				MessagingService:PublishAsync(topicname, {
+					header = "messageSession",
+					room = room,
+					player = {player.UserId, player.Name},
+					message = message,
+				})
+			end)
+			if not publishSuccess then
+				warn(publishResult)
+			end
 		end
 
 		startSession(plr)
