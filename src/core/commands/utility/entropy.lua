@@ -49,19 +49,19 @@ local cmd = {
 		args = table.concat(args, " ")
 		local isFile = pCsi.xfs.exists(args)
 		local file = isFile and pCsi.xfs.read(args) or nil
-        local toreturn = "-- Shannon's Entropy --\n"
-        --toreturn..="- 0 represents no randomness (i.e. all the bytes in the data have the same value) whereas 8, the maximum, represents a completely random string.\n- Standard English text usually falls somewhere between 3.5 and 5.\n- Properly encrypted or compressed data of a reasonable length should have an entropy of over 7.5.\nThe following results show the entropy of chunks of the input data. Chunks with particularly high entropy could suggest encrypted or compressed sections.\n"
-        local se = shannonEntropy(isFile and file or args)
-        toreturn ..= (isFile and "File" or "Text").."'s Shannon's Entropy: "..se.."\n"
-        local progressbar = essentials.Output:ProgressBar((se/8)*100, 25, false, true)
-        toreturn ..= progressbar.."\n"
-        toreturn ..="English text: "..tostring(se > 3.5 and se < 5).."\n"
-        toreturn ..="Encrypted/compressed: "..tostring(se > 7.5).."\n"
-        toreturn..="\n"
-        toreturn..="-- Password Strength --\n"
-        local pe = passwordEntropy(isFile and file or args)
-        toreturn..=(isFile and "File" or "Text").."'s Password Strength: "..pe.."\n"
-        return toreturn
+		local toreturn = "-- Shannon's Entropy --\n"
+		--toreturn..="- 0 represents no randomness (i.e. all the bytes in the data have the same value) whereas 8, the maximum, represents a completely random string.\n- Standard English text usually falls somewhere between 3.5 and 5.\n- Properly encrypted or compressed data of a reasonable length should have an entropy of over 7.5.\nThe following results show the entropy of chunks of the input data. Chunks with particularly high entropy could suggest encrypted or compressed sections.\n"
+		local se = shannonEntropy(isFile and file or args)
+		toreturn ..= (isFile and "File" or "Text") .. "'s Shannon's Entropy: " .. se .. "\n"
+		local progressbar = essentials.Output:ProgressBar((se / 8) * 100, 25, false, true)
+		toreturn ..= progressbar .. "\n"
+		toreturn ..= "English text: " .. tostring(se > 3.5 and se < 5) .. "\n"
+		toreturn ..= "Encrypted/compressed: " .. tostring(se > 7.5) .. "\n"
+		toreturn ..= "\n"
+		toreturn ..= "-- Password Strength --\n"
+		local pe = passwordEntropy(isFile and file or args)
+		toreturn ..= (isFile and "File" or "Text") .. "'s Password Strength: " .. pe .. "\n"
+		return toreturn
 	end,
 }
 
