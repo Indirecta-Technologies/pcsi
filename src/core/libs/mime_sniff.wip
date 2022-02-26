@@ -1,8 +1,7 @@
-require "table.new"
 local error = error
 local ipairs = ipairs
 local type = type
-local bit = require "bit"
+local bit =  bit32
 local bit_band  = bit.band
 local bit_lshift = bit.lshift
 local re_find = ngx.re.find

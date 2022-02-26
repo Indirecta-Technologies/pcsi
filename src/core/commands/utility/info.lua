@@ -8,6 +8,7 @@ local cmd = {
 			"Name: "..essentials.Identification.ProductInfo.Software.Name.."\n"..
 			"Version: "..essentials.Identification.ProductInfo.Software.Version.."\n"..
 			"Serial Identification Number: "..essentials.Identification.SERIAL.."\n"..
+			"Hardware Id: "..essentials.Identification.HWID.."\n"..
 			"-- End of System Info --"
 		)
 	end,

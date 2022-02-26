@@ -5,7 +5,12 @@ local cmd = {
 	displayOutput = true,
 	fn = function(plr, pCsi, essentials, args)
 		local sha256 = pCsi.libs.sha_256
-		return sha256().updateStr(table.concat(args, " ")).finish().asHex()
+		args = table.concat(args, " ")
+		local isFile = pCsi.xfs.exists(args)
+		local file = isFile and pCsi.xfs.read(args) or nil
+
+		
+		return (isFile and "file: " or "text: ")..sha256().updateStr(isFile and file or args).finish().asHex()
 	end,
 }
 

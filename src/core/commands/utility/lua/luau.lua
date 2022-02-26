@@ -204,7 +204,7 @@ local cmd = {
 		local function docall(f, ...)
 			local tp = { ... } -- no need in tuple (string arguments only)
 			local F = function()
-				return type(f) == "function" and f(unpack(tp)) or f
+				return f(unpack(tp))--type(f) == "function" and f(unpack(tp)) or f
 			end
 			setsignal(true)
 			local result = tuple(xpcall(F, traceback))
@@ -222,7 +222,7 @@ local cmd = {
 			
 			local f, msg = fione(bytecode, nil, environment)
 			
-			if f then
+			if type(f) == "function" then
 				f, msg = docall(f)
 			end
 			return report(f, msg)

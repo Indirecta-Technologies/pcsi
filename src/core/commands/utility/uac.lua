@@ -36,7 +36,9 @@ local cmd = {
 				essentials.Console.info("uac :: Repeat: ")
 				local newwwpass = sha256().updateStr(salt.. pCsi.io.read()..salt).finish().asHex()
 				if newwwpass == newwpass then
-					pasw = newwwpass; loggedIn = false; essentials.Output:OutputToAll("ClearScreen"); essentials.Console.info("uac :: Changed password and locked out")
+					pasw = newwwpass; 
+					essentials.Console.info("uac :: Changed password")
+					--loggedIn = false; essentials.Output:OutputToAll("ClearScreen"); essentials.Console.info("uac :: Changed password and logged out")
 				else return essentials.Console.info("uac :: <b>"..plr.Name.."</b>, wrong password")
 				end
 
