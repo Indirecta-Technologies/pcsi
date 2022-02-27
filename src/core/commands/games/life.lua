@@ -12,10 +12,8 @@ local cmd = {
 
 		local write = pCsi.io.write
 
-		ALIVE = "V"
-		DEAD = "X"
-		ALIVE = "W"
-		DEAD = " "
+		local ALIVE = "▉"
+		local DEAD = " "
 
 		function delay() -- NOTE: SYSTEM-DEPENDENT, adjust as necessary
 			for i = 1, 10000 do
@@ -111,12 +109,19 @@ local cmd = {
 
 			-- run until break
 			local gen = 1
+            local run = true
+            local oldparse = pCsi.parseCommand
+            function pCsi:parseCommand(plr, args)
+                run = false
+                pCsi.parseCommand = oldparse
+                write("Ended Conway's game of life")
+            end
             essentials.Output:OutputToAll("ClearScreen")
-			while 1 do
+			while run do
 				thisgen:evolve(nextgen)
 				thisgen, nextgen = nextgen, thisgen
                 essentials.Output:OutputToAll("ClearScreen")
-                write("Life - generation ", gen, "\n")
+                write("Conway's Game of Life (any to quit) - Gen ", gen, "\n")
 				thisgen:draw()
 				gen = gen + 1
 				if gen > 2000 then
