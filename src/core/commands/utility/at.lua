@@ -11,11 +11,14 @@ local cmd = {
 		local arg2 = table.concat(args, " ")
 		if arg1 == "all" then
 			return game:GetService("HttpService"):JSONEncode(schedules)
+		elseif arg1 == "clear" then
+			schedules = {}
 		else
 			table.insert(schedules, task.spawn(function()
 				while not arg1 == os.date("%X",os.time()) do task.wait(1) end
 				pCsi.parseCommand(plr, arg2)
 			end))
+			return "job "..#schedules.." at "..arg1
 		end
 	end,
 }
