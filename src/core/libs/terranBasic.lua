@@ -479,7 +479,7 @@ local function _fnprint(...)
     local args = __resolvevararg(...)
 
     if #args < 1 then
-        io.write ""
+        pCsi.io.write ""
     else
         for i, arg in ipairs(args) do
             if i > 1 then io.write "\t" end
@@ -488,7 +488,7 @@ local function _fnprint(...)
         end
     end
 
-    io.write "\n"
+    pCsi.io.write "\n"
 end
 
 local function _fngoto(lnum)

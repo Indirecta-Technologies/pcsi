@@ -27,6 +27,29 @@ How to use in your program:
 		return hash
 	end
 
+	local tabla = {}
+    function tabla.binsearch(t, value, cmpval)
+        local low = 1
+        local high = #t
+        local cmp = cmpval or default_cmp_fn
+
+        local value = cmp(value)
+
+        while low <= high do
+            local mid = bit.rshift((low + high), 1)
+            local midVal = t[mid]
+
+            if value > cmp(midVal) then
+                low = mid + 1
+            elseif value < cmp(midVal) then
+                high = mid - 1
+            else
+                return mid -- key found
+            end
+        end
+        return nil -- key not found
+    end
+
 	-- INTERPRETER STATUS ---------------------------------------------------------
 
 	local programlist = {}
@@ -73,7 +96,7 @@ How to use in your program:
 			-----------------------
 
 			-- filter internal-use-only functions/operators (aka OPCODES)
-			for _, opcode in ipairs(_G._TBASIC.OPILLEGAL) do
+			for _, opcode in ipairs(_TBASIC.OPILLEGAL) do
 				if upperline:find(opcode) ~= nil then
 					_TBASIC._ERROR.SYNTAXAT(opcode)
 				end
@@ -175,7 +198,7 @@ How to use in your program:
 				local lookless_count = #string
 				local ret = nil
 				repeat
-					ret = table.binsearch(tokens, string:sub(1, lookless_count), cmpval)
+					ret = tabla.binsearch(tokens, string:sub(1, lookless_count), cmpval)
 					lookless_count = lookless_count - 1
 				until ret or lookless_count < 1
 				return ret and lookless_count + 1 or false
@@ -327,7 +350,7 @@ How to use in your program:
 		end
 
 		function printdbg(...)
-			local debug = true --false
+			local debug = false --false
 			if debug then
 				pCsi.io.write("TBASEXEC", ...)
 			end
