@@ -117,27 +117,75 @@ return function(Essentials, Efile)
 		end
 
 		local allcommands = {}
+		local allcommandnames = {}
 		recurseTable(lm.commands, function(i, v)
 			if type(v) == "table" and not v.__isDir then
 				allcommands[v.name] = v
+				table.insert(allcommandnames, v.name)
 			end
 		end)
 
+		local function get_tip(context, wrong_name)
+			local context_pool = {}
+			local possible_name
+			local possible_names = {}
+		 
+			for name in pairs(context) do
+			   if type(name) == "string" then
+				  for i = 1, #name do
+					 possible_name = name:sub(1, i - 1) .. name:sub(i + 1)
+		 
+					 if not context_pool[possible_name] then
+						context_pool[possible_name] = {}
+					 end
+		 
+					 table.insert(context_pool[possible_name], name)
+				  end
+			   end
+			end
+		 
+			for i = 1, #wrong_name + 1 do
+			   possible_name = wrong_name:sub(1, i - 1) .. wrong_name:sub(i + 1)
+		 
+			   if context[possible_name] then
+				  possible_names[possible_name] = true
+			   elseif context_pool[possible_name] then
+				  for _, name in ipairs(context_pool[possible_name]) do
+					 possible_names[name] = true
+				  end
+			   end
+			end
+		 
+			local first = next(possible_names)
+			print(table.concat(possible_names))
+			if first then
+			   if next(possible_names, first) then
+				  local possible_names_arr = {}
+		 
+				  for name in pairs(possible_names) do
+					 table.insert(possible_names_arr, "'" .. name .. "'")
+				  end
+		 
+				  table.sort(possible_names_arr)
+				  return "\nDid you mean one of these: " .. table.concat(possible_names_arr, ", ") .. "?"
+			   else
+				  return "\nDid you mean '" .. first .. "'?"
+			   end
+			else
+			   return ""
+			end
+		 end
+
 		local function parseCmd(plr, arg, o)
-			print(plr.Name .. ": Command '" .. arg .. "'; Omit: " .. tostring(o))
+			print(plr.Name .. ": Command '" .. arg .. "'; Omit: " .. tostring(o)); 
 			arg = string.split(arg, " ")
 			local command = arg[1]
 			local args = arg
 			table.remove(args, 1)
-			if command == "cmds" then
-				local length = 0
-				local allnames = {}
-				for i, v in pairs(allcommands) do
-					length += 1
-					table.insert(allnames, v.name)
-				end
-				Essentials.Console.info(length .. " commands: " .. table.concat(allnames, ", "))
-				return table.concat(allnames, ", ")
+			if command == "cmds" then --remake cmds and cmd as commands
+				local length = 0				
+				Essentials.Console.info(length .. " commands: " .. table.concat(allcommandnames, ", "))
+				return table.concat(allcommandnames, ", ")
 			elseif command == "cmd" then
 				if allcommands[args[1]] == nil then
 					Essentials.Console.warn("Command '" .. args[1] .. "' not found")
@@ -179,7 +227,7 @@ return function(Essentials, Efile)
 						Essentials.Console.warn(
 							"'"
 								.. command
-								.. "' is not recognized as an internal or external command, operable program or batch file."
+								.. "' is not recognized as an internal or external command, operable program or batch file.".. get_tip(allcommands, command)
 						)
 					end
 				else

@@ -1,6 +1,6 @@
 local cmd = {
 	name = script.Name,
-	desc = [[Outputs sha256 of input]],
+	desc = [[Outputs sha256 checksum of input]],
 	usage = [[$ info]],
 	displayOutput = true,
 	fn = function(plr, pCsi, essentials, args)

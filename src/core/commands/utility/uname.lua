@@ -3,6 +3,7 @@ local cmd = {
 	desc = [[Displays info about Xinu]],
 	usage = [[$ info]],
 	fn = function(plr, pCsi, essentials, args)
+		--edit to behave more like uname command?
 		essentials.Console.info("-- System Information --\n"..
 			"Manufacturer: "..essentials.Identification.ProductInfo.Product.Manufacturer.."\n"..
 			"Name: "..essentials.Identification.ProductInfo.Software.Name.."\n"..

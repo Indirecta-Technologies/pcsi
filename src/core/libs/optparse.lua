@@ -86,7 +86,8 @@ LICENSE
  --]]
 
  local M = {_TYPE='module', _NAME='pythonic.optparse', _VERSION='0.3.20111128'}
- 
+
+ -- make this work with luau
 local ipairs = ipairs
 local unpack = unpack
 local io = io
@@ -95,7 +96,7 @@ local os = os
 local arg = arg
 
 
-local function OptionParser(t)
+local function OptionParser(t, pCsi)
   local usage = t.usage
   --local version = t.version
 
