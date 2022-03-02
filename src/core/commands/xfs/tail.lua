@@ -4,11 +4,30 @@ local cmd = {
 	displayOutput = true,
 	usage = [[$ tail file.txt 12]],
 	fn = function(plr, pCsi, essentials, args)
-		local str = pCsi.xfs.read(args[1])
-		local lines = tonumber(args[2]) or 10
+		local str = pCsi.xfs.exists(args[1]) and pCsi.xfs.read(args[1]) or table.concat(args)
+		local lines = tonumber(args[#args]) or 10
 		local buffer = ""
 
-        local splitt = string.split(str, "\n")
+		local function split_newlines(s)
+			local ts = {}
+			local posa = 1
+			while 1 do
+			  local pos, chars = s:match('()([\r\n].?)', posa)
+			  if pos then
+				if chars == '\r\n' then pos = pos + 1 end
+				local line = s:sub(posa, pos)
+				ts[#ts+1] = line
+				posa = pos + 1
+			  else
+				local line = s:sub(posa)
+				if line ~= '' then ts[#ts+1] = line end
+				break      
+			  end
+			end
+			return ts
+		  end
+
+        local splitt = split_newlines(str)
 
         local inc = 0
 		for i = #splitt, 1, -1 do
