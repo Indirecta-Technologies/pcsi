@@ -2,7 +2,7 @@ local schedules = {}
 
 local cmd = {
 	name = script.Name,
-	desc = [[Search for a pattern]],
+	desc = [[File crc32 Checksum]],
 	usage = [[$ ]],
 	displayOutput = true,
 	fn = function(plr, pCsi, essentials, args)
