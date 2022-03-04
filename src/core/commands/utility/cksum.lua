@@ -25,7 +25,7 @@ local cmd = {
 			end--for
 			return bit32.band(bit32.bxor(crc), 0xffffffff)
 		end
-		return filem.." "..crc32_nt(file).." "..#file
+		return crc32_nt(file).." "..#file.." "..filem
 	end,
 }
 
