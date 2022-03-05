@@ -183,7 +183,7 @@ return function(Essentials, Efile)
 			local args = arg
 			table.remove(args, 1)
 			if command == "cmds" then --remake cmds and cmd as commands
-				local length = 0				
+				local length = #allcommandnames
 				Essentials.Console.info(length .. " commands: " .. table.concat(allcommandnames, ", "))
 				return table.concat(allcommandnames, ", ")
 			elseif command == "cmd" then

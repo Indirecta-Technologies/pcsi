@@ -94,7 +94,7 @@ local cmd = {
 
 			local filteredMessage
 			local success1, errorMessage2 = pcall(function()
-				filteredMessage = textObject:GetNonChatStringForBroadcastAsync()
+				filteredMessage = textObject:GetChatForUserAsync(plr.UserId)
 			end)
 			if success1 then
 				message = filteredMessage

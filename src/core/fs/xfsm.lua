@@ -408,15 +408,11 @@ function module.append(name, text)
 		"incorrect mode. (expected a|a+r, got " .. module.mode(name) .. ")"
 	)
 	local xcompress = require(script.Parent.Parent.libs.xcompress)
-	local buffer
+	local buffer = module.read(name)
+	buffer ..= text
 
 	if module.currentIndex[name]:GetAttribute("xcompress") == true then
-		buffer = module.read(name)
-		buffer ..= text
 		buffer = xcompress.compress(buffer)
-	else
-		buffer = module.read(name)
-		buffer ..= text
 	end
 
 	module.write(name, game:GetService("HttpService"):UrlEncode(buffer))
