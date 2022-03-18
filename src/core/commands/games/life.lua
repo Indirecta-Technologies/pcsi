@@ -74,7 +74,7 @@ local cmd = {
 				end
 				out = out .. "\n"
 			end
-			write(out)
+			return out
 		end
 
 		-- constructor
@@ -121,8 +121,8 @@ local cmd = {
 				thisgen:evolve(nextgen)
 				thisgen, nextgen = nextgen, thisgen
                 essentials.Output:OutputToAll("ClearScreen")
-                write("Conway's Game of Life (any to quit) - Gen ", gen, "\n")
-				thisgen:draw()
+                write("Conway's Game of Life (any to quit) - Gen ".. gen, thisgen:draw())
+				
 				gen = gen + 1
 				if gen > 2000 then
 					break

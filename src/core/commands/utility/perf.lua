@@ -1,7 +1,7 @@
 local cmd = {
 	name = script.Name,
-	desc = [[Displays info about Xinu]],
-	usage = [[$ info]],
+	desc = [[Performance Stats from Xinu HSE]],
+	usage = [[$ perf]],
 	fn = function(plr, pCsi, essentials, args)
 		local perf = essentials.PerformanceStats()
 		--[[

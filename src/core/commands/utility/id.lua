@@ -21,7 +21,7 @@ local cmd = {
 			.. " "
 			.. (success and nation or "")
 			.. " "
-			.. pCsi.libs.sha_256().updateStr(tostring(plr.UserId..nation)).finish().asHex()
+			.. pCsi.libs.sha_256().updateStr(tostring(plr.UserId..nation..game.GameId)).finish().asHex()
 	end,
 }
 

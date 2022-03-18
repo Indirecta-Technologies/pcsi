@@ -31,6 +31,16 @@ return function(Essentials, Efile)
 		lm.fileTypeBindings = {}
 		--lm.libs = {}
 
+		lm.vars = {}
+
+		lm.setVar = function(i, v)
+			rawset(lm.vars, i, v)
+		end
+
+		lm.getVars = function(arg1)
+			return arg1 == "#" and #lm.vars or lm.vars
+		end
+
 		function lm:load(name, folder, recursiv)
 			if not folder or not name then
 				return
@@ -67,8 +77,12 @@ return function(Essentials, Efile)
 			end
 		end
 
-		lm:load(script.libs.Name, script.libs:GetChildren())
-		lm:load(Folder.Name, Folder:GetChildren())
+		lm.vars["LIBS_DIR"] = script.libs.Name
+		lm.vars["CMDS_DIR"] = Folder.Name
+		lm.vars["SHELL"] = script[lm.vars["LIBS_DIR"]]["sh2"].Name
+
+		lm:load(lm.vars["LIBS_DIR"], script[lm.vars["LIBS_DIR"]]:GetChildren())
+		lm:load(lm.vars["CMDS_DIR"], script[lm.vars["CMDS_DIR"]]:GetChildren())
 
 		lm.io = {}
 
@@ -94,6 +108,94 @@ return function(Essentials, Efile)
 		lm.io.write = function(...)
 			Essentials.Console.info(...)
 		end
+
+		local ArgParser = {
+			Trim = function(self, str: string)
+				return string.match(str, "^%s*(.-)%s*$")
+			end,
+		
+			ReplaceCharacters = function(self, str: string, chars: {}, replaceWith)
+				for i, char in ipairs(chars) do
+					str = string.gsub(str, char, replaceWith or "")
+				end
+				return str
+			end,
+		
+			RemoveQuotes = function(self, str: string)
+				return self:ReplaceCharacters(str, {'^"(.+)"$', "^'(.+)'$"}, "%1")
+			end,
+		
+			SplitString = function(self, str: string, splitChar: string, removeQuotes: boolean)
+				local segments = {}
+				local sentinel = string.char(0)
+				local function doSplitSentinelCheck(x: string) return string.gsub(x, splitChar, sentinel) end
+				local quoteSafe = self:ReplaceCharacters(str, {'%b""', "%b''"}, doSplitSentinelCheck)
+				for segment in string.gmatch(quoteSafe, "([^".. splitChar .."]+)") do
+					local result = self:Trim(string.gsub(segment, sentinel, splitChar))
+					if removeQuotes then
+						result = self:RemoveQuotes(result)
+					end
+					table.insert(segments, result)
+				end
+				return segments
+			end,
+		
+			ConvertToParams = function(self, args, stopAtFirstParamArg)
+				local result = {}
+				local curParam
+				local curPos = 1
+				local curArg = args[curPos]
+		
+				while curArg do
+					local gotParam = curArg:match("^%-%-(.+)") or curArg:match("^%-(.+)")
+					
+					if gotParam then
+						curParam = gotParam
+						result[curParam] = ""
+					elseif curParam then
+						result[curParam] = result[curParam] .. curArg
+		
+						--// If we only want one match per param
+						if stopAtFirstParamArg then
+							curParam = nil
+						end
+					else
+						table.insert(result, curArg)
+					end
+		
+					curPos += 1
+					curArg = args[curPos]
+				end
+		
+				return result
+			end,
+		
+			ConvertToDataType = function(self, str)
+				if tonumber(str) then
+					return tonumber(str)
+				elseif string.lower(str) == "false" then
+					return false
+				elseif string.lower(str) == "true" then
+					return true
+				else
+					return str
+				end
+			end,
+		
+			Parse = function(self, str: string, split: string?, removeQuotes: boolean?, stopAtFirstParamArg: boolean?)
+				local removeQuotes = if removeQuotes ~= nil then removeQuotes else true
+				local stopAtFirstParamArg = if stopAtFirstParamArg ~= nil then stopAtFirstParamArg else true
+				local extracted = self:SplitString(str, split or ' ', false)
+				local params = self:ConvertToParams(extracted, stopAtFirstParamArg)
+		
+				for ind,value in pairs(params) do
+					local trueVal = self:ConvertToDataType(value)
+					params[ind] = if type(trueVal) == "string" and removeQuotes then self:RemoveQuotes(trueVal) else trueVal
+				end
+				
+				return params
+			end
+		}
 
 		function lm:execute(plr, command, args)
 			local r
@@ -129,70 +231,70 @@ return function(Essentials, Efile)
 			local context_pool = {}
 			local possible_name
 			local possible_names = {}
-		 
+
 			for name in pairs(context) do
-			   if type(name) == "string" then
-				  for i = 1, #name do
-					 possible_name = name:sub(1, i - 1) .. name:sub(i + 1)
-		 
-					 if not context_pool[possible_name] then
-						context_pool[possible_name] = {}
-					 end
-		 
-					 table.insert(context_pool[possible_name], name)
-				  end
-			   end
+				if type(name) == "string" then
+					for i = 1, #name do
+						possible_name = name:sub(1, i - 1) .. name:sub(i + 1)
+
+						if not context_pool[possible_name] then
+							context_pool[possible_name] = {}
+						end
+
+						table.insert(context_pool[possible_name], name)
+					end
+				end
 			end
-		 
+
 			for i = 1, #wrong_name + 1 do
-			   possible_name = wrong_name:sub(1, i - 1) .. wrong_name:sub(i + 1)
-		 
-			   if context[possible_name] then
-				  possible_names[possible_name] = true
-			   elseif context_pool[possible_name] then
-				  for _, name in ipairs(context_pool[possible_name]) do
-					 possible_names[name] = true
-				  end
-			   end
+				possible_name = wrong_name:sub(1, i - 1) .. wrong_name:sub(i + 1)
+
+				if context[possible_name] then
+					possible_names[possible_name] = true
+				elseif context_pool[possible_name] then
+					for _, name in ipairs(context_pool[possible_name]) do
+						possible_names[name] = true
+					end
+				end
 			end
-		 
+
 			local first = next(possible_names)
 			print(table.concat(possible_names))
 			if first then
-			   if next(possible_names, first) then
-				  local possible_names_arr = {}
-		 
-				  for name in pairs(possible_names) do
-					 table.insert(possible_names_arr, "'" .. name .. "'")
-				  end
-		 
-				  table.sort(possible_names_arr)
-				  return "\nDid you mean one of these: " .. table.concat(possible_names_arr, ", ") .. "?"
-			   else
-				  return "\nDid you mean '" .. first .. "'?"
-			   end
+				if next(possible_names, first) then
+					local possible_names_arr = {}
+
+					for name in pairs(possible_names) do
+						table.insert(possible_names_arr, "'" .. name .. "'")
+					end
+
+					table.sort(possible_names_arr)
+					return "\nDid you mean one of these: " .. table.concat(possible_names_arr, ", ") .. "?"
+				else
+					return "\nDid you mean '" .. first .. "'?"
+				end
 			else
-			   return ""
+				return ""
 			end
-		 end
+		end
 
 		local function parseCmd(plr, arg, o)
-			print(plr.Name .. ": Command '" .. arg .. "'; Omit: " .. tostring(o)); 
+			print(plr.Name .. ": Command '" .. arg .. "'; Omit: " .. tostring(o))
 			arg = string.split(arg, " ")
 			local command = arg[1]
-			local args = arg
-			table.remove(args, 1)
+			table.remove(arg, 1)
+			local args = ArgParser:Parse(table.concat(arg))
 			if command == "cmds" then --remake cmds and cmd as commands
 				local length = #allcommandnames
 				Essentials.Console.info(length .. " commands: " .. table.concat(allcommandnames, ", "))
 				return table.concat(allcommandnames, ", ")
 			elseif command == "cmd" then
-				if allcommands[args[1]] == nil then
-					Essentials.Console.warn("Command '" .. args[1] .. "' not found")
+				if allcommands[command] == nil then
+					Essentials.Console.warn("Command '" .. command .. "' not found")
 				else
 					Essentials.Console.info(
-						"Description: " .. allcommands[args[1]].desc,
-						"Usage: " .. allcommands[args[1]].usage
+						"Description: " .. allcommands[command].desc,
+						"Usage: " .. allcommands[command].usage
 					)
 				end
 			else
@@ -227,7 +329,8 @@ return function(Essentials, Efile)
 						Essentials.Console.warn(
 							"'"
 								.. command
-								.. "' is not recognized as an internal or external command, operable program or batch file.".. get_tip(allcommands, command)
+								.. "' is not recognized as an internal or external command, operable program or batch file."
+								.. get_tip(allcommands, command)
 						)
 					end
 				else
@@ -294,6 +397,24 @@ return function(Essentials, Efile)
 		lm.onUpdatedOutput = Instance.new("BindableEvent")
 		lm.onKeyStroke = Instance.new("BindableEvent")
 
+		lm.reboot = function()
+			if Essentials.Freestore[0x000A2] then
+				Essentials.Console.warn("Resetting..")
+				Essentials.Freestore[0x000A2]:reboot()
+			else
+				Essentials.Console.warn("Missing PowerManager in 0x000A2 Freestore Address")
+			end
+		end
+
+		lm.shutdown = function() 
+			if Essentials.Freestore[0x000A2] then
+				Essentials.Console.warn("Shutting down..")
+				Essentials.Freestore[0x000A2]:shutdown()
+			else
+				Essentials.Console.warn("Missing PowerManager in 0x000A2 Freestore Address")
+			end
+		end
+
 		inputconn = bindable.Event:Connect(function(mode, arg, plr)
 			if mode == "keyStroke" then
 				lm.onKeyStroke:Fire(plr, arg)
@@ -312,10 +433,7 @@ return function(Essentials, Efile)
 				elseif arg == Enum.KeyCode.F5 then
 					if stat == 2 then
 						-- do stuff
-						Essentials.Console.warn("Reloading kernel..")
-						if Essentials.Freestore[0x000A2] then
-							Essentials.Freestore[0x000A2]:reboot()
-						end
+						lm.reboot()
 						stat = 0
 					else
 						stat = 0

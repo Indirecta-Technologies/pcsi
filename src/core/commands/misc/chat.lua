@@ -10,15 +10,10 @@ local cmd = {
 		pCsi.io.write("Initializing chat..")
 		local MessagingService = game:GetService("MessagingService")
 		local topicname = "_xChat" .. game.GameId
-		local remote
-
-		remote = game:GetService("ServerStorage"):WaitForChild("_xChat" .. game.JobId, 3)
-			or Instance.new("BindableEvent", game:GetService("ServerStorage"))
-		remote.Name = "_xChat" .. game.JobId
 
 		local oldparse = pCsi.parseCommand
 
-		local room = pCsi.libs.sha_256().updateStr(game.JobId .. table.concat(args)).finish()
+		local room = pCsi.libs.sha_256().updateStr(table.concat(args)).finish()
 		local roomstr = room.asHex()
 
 		local NAME_COLORS = {
@@ -86,21 +81,24 @@ local cmd = {
 
 			local textObject
 			local success, errorMessage = pcall(function()
-				textObject = TextService:FilterStringAsync(message, player.UserId)
+				textObject = TextService:FilterStringAsync(message, player)
 			end)
 			if not success then
-				message = string.rep("_", #message)
+				message = string.rep("_", #message).."; "..errorMessage
 			end
 
-			local filteredMessage
-			local success1, errorMessage2 = pcall(function()
-				filteredMessage = textObject:GetChatForUserAsync(plr.UserId)
-			end)
-			if success1 then
-				message = filteredMessage
-			else
-				message = string.rep("_", #message)
+			if success and textObject then
+				local filteredMessage
+				local success1, errorMessage2 = pcall(function()
+					filteredMessage = textObject:GetChatForUserAsync(plr.UserId)
+				end)
+				if success1 then
+					message = filteredMessage
+				else
+					message = string.rep("_", #message).."; "..errorMessage2
+				end
 			end
+			
 			return message
 		end
 
@@ -189,7 +187,7 @@ local cmd = {
 	
 
 		local function processMessage(player, message)
-			message = filtermessage(player, message)
+			message = filtermessage(player.UserId, message)
 
 			local publishSuccess, publishResult = pcall(function()
 				MessagingService:PublishAsync(

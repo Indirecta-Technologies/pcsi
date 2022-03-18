@@ -10,7 +10,7 @@ local cmd = {
 		table.remove(1, args)
 		local pattern = table.concat(args)
 		local function grep(pattern)
-			local file = pCsi.xfs.exists(v) and pCsi.xfs.read(v) or v
+			local file = pCsi.xfs.exists(file) and pCsi.xfs.read(file) or file
 				local lineNum = 1
 				for i,line in ipairs(file.split("\n")) do
 					if string.find(line, pattern) ~= nil then

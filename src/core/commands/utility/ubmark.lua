@@ -17,7 +17,10 @@ local cmd = {
 -- https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test
 -- https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test
 local output = ""
-
+local queue = {}
+local write = function(...)
+    output ..= table.concat({...}).." "
+end
 
 local bmark = (function() -- Local wrapper.
 
@@ -25,9 +28,7 @@ local bmark = (function() -- Local wrapper.
     local abs, exp, floor, sqrt = math.abs, math.exp, math.floor, math.sqrt
     local concat, sort = table.concat, table.sort
     local format, match, sub = string.format, string.match, string.sub
-    local write = function(...)
-        output ..= table.concat({...}).." "
-    end
+  
     local clock = os.clock -- Can be overridden.
     
     -- Measure the clock time of repeteadly executing a thunk.
@@ -185,7 +186,6 @@ local bmark = (function() -- Local wrapper.
         end
     end
     
-    local queue = {}
     local queue_only = false
     
     local L = {
@@ -195,9 +195,15 @@ local bmark = (function() -- Local wrapper.
             if def.only then queue_only = true end
             queue[#queue+1] = def
         end,
+        run_name = function(name)
+            for i,def in ipairs(queue) do
+                if name == def.name then
+                    return bmark(def)
+                end
+            end
+        end,
         run = function() -- Run the queue.
-            for i=1, #queue do
-                local def = queue[i]
+            for i,def in ipairs(queue) do
                 if queue_only ~= not def.only then
                     bmark(def)
                 end
@@ -453,7 +459,7 @@ local bmark = (function() -- Local wrapper.
     }
     end
     
-    bmark.q{ name = "storage:vararg", only = true,
+    bmark.q{ name = "storage:vararg", only = false,
         init = function()
             local index_lookup = {
                 one   = 1,
@@ -531,7 +537,14 @@ local bmark = (function() -- Local wrapper.
         },
     }
     
-    bmark.run()
+    if args.list then 
+        for i,def in ipairs(queue) do
+                write(def.name..(i < #queue and " | " or ""))
+        end
+    else
+        bmark.run_name(args[1] or args.n or "storage:vararg")
+    end
+    
     return output
 	end,
 }
