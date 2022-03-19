@@ -217,7 +217,7 @@ local cmd = {
 				pCsi.parseCommand = oldparse
 			end
 			if not plra == plr then
-				pCsi.io.write(
+				return pCsi.io.write(
 					"This chat session is being used by <b>"
 						.. plr.Name
 						.. "</b>, consider ending the session? '!quit' "
