@@ -74,14 +74,14 @@ return function()
 
 	env._ENV = env :: dictionary
 
-	env["getf".."env"] = function(target: (func | number)?): dictionary
+	env["getfenv"] = function(target: (func | number)?): dictionary
 		assert(type(target) == "number" or type(target) == "function" or type(target) == "nil", "invalid argument #1 to 'getf".."env' (number expected, got "..type(target)..")")
 		assert(type(target) == "number" and target >= 0 or type(target) ~= "number", "invalid argument #1 to 'getf".."env' (level must be non-negative)")
 
 		return env
 	end
 
-	env["setf".."env"] = function(target: func | number, newEnv: dictionary): ()
+	env["setfenv"] = function(target: func | number, newEnv: dictionary): ()
 		assert(type(newEnv) == "table", "invalid argument #2 to 'setf".."env' (table expected, got "..type(newEnv)..")")
 		assert(type(target) == "number" or type(target) == "function", "invalid argument #1 to 'setf".."env' (number expected, got "..type(target)..")")
 		assert(type(target) == "number" and target >= 0, "invalid argument #1 to 'setf".."env' (level must be non-negative)")

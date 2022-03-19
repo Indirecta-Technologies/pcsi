@@ -18,11 +18,12 @@ return function(Essentials, Efile)
 		local verinfo = table.freeze({
 
 			sname = "Pointcove/Indirecta(R) pcsi",
-			vname = "1.2-c61a769",
+			vname = "2022 1.3",
 		})
 
 		Essentials.Console.info(verinfo.sname .. " - " .. verinfo.vname)
-
+		Essentials.Console.info("Use 'cmds' to get a list of all available commands | Use 'uac' to set, change, or lock with a password this session")
+		
 		local Folder = script.commands
 		local config = require(script.Configuration)
 
