@@ -71,10 +71,13 @@ return function(Essentials, Efile)
 					elseif typeof(v) == "function" then
 						newfolder[n] = v
 					end
-				end
-				if typeof(v) == "Instance" and v:IsA("Folder") then
+				elseif typeof(v) == "Instance" and v:IsA("Folder") then
 					self:load(v.Name, v:GetChildren(), newfolder)
+				elseif typeof(v) == "Instance" and v:IsA("SurfaceGui") then 
+					local n = v.Name
+					newfolder[n] = v
 				end
+				
 			end
 		end
 

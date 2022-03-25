@@ -1,41 +1,46 @@
+math.randomseed(os.time()+math.random(1111,9999)+tick())
+
 local address_msk = ("255.255.0.0"):split(".")
 local address = ""
 
 local topicname = "_xSecureShell" .. game.GameId
 
-local aes256 = pCsi.libs.aes_256
-local ascii85 = pCsi.libs.ascii85
-
-local jsoncrypt = {
-	encrypt = function(table, key)
-		table["_timestamp"] = tick()
-		local success, response = pcall(function()
-			table = game:GetService("HttpService"):JSONEncode(table)
-		end)
-		if not success then
-			return nil, response
-		end
-		return ascii85.encode(aes256.ECB(aes256.encrypt, key, table)) or nil
-	end,
-	decrypt = function(table, key)
-		local success, response = pcall(function()
-			table = ascii85.decode(table)
-			table = aes256.ECB(aes256.decrypt, key, table) or nil
-			table = game:GetService("HttpService"):JSONDecode(table)
-		end)
-		if not success then
-			return nil, response
-		end
-		return table
-	end,
-}
+local MessagingService = game:GetService("MessagingService")
 
 local cmd = {
 	name = script.Name,
 	desc = [[Chat and display your identity]],
 	usage = "$ ssh",
 	displayOutput = true,
-	ready = function()
+	ready = function(pCsi, essentials)
+
+		local aes256 = pCsi.libs.aes_256
+		local ascii85 = pCsi.libs.ascii85
+		
+		local jsoncrypt = {
+			encrypt = function(table, key)
+				table["_timestamp"] = tick()
+				local success, response = pcall(function()
+					table = game:GetService("HttpService"):JSONEncode(table)
+				end)
+				if not success then
+					return nil, response
+				end
+				return ascii85.encode(aes256.ECB(aes256.encrypt, key, table)) or nil
+			end,
+			decrypt = function(table, key)
+				local success, response = pcall(function()
+					table = ascii85.decode(table)
+					table = aes256.ECB(aes256.decrypt, key, table) or nil
+					table = game:GetService("HttpService"):JSONDecode(table)
+				end)
+				if not success then
+					return nil, response
+				end
+				return table
+			end,
+		}
+
 		for i, v in ipairs(address_msk) do
 			if v == "255" then
 				address ..= (i == 1 and "192" or "168")
@@ -48,7 +53,7 @@ local cmd = {
 			end
 		end
 
-		local room = pCsi.libs.sha_256().updateStr(table.concat(address)).finish()
+		local room = pCsi.libs.sha_256().updateStr(address).finish()
 		local roomstr = room.asHex()
 
 		local _key = aes256.schedule256(tonumber("0x" .. roomstr))
@@ -92,7 +97,35 @@ local cmd = {
 		end)
 	end,
 	fn = function(plr, pCsi, essentials, args)
-		local room = pCsi.libs.sha_256().updateStr(table.concat(args[1])).finish()
+
+		local aes256 = pCsi.libs.aes_256
+local ascii85 = pCsi.libs.ascii85
+
+local jsoncrypt = {
+	encrypt = function(table, key)
+		table["_timestamp"] = tick()
+		local success, response = pcall(function()
+			table = game:GetService("HttpService"):JSONEncode(table)
+		end)
+		if not success then
+			return nil, response
+		end
+		return ascii85.encode(aes256.ECB(aes256.encrypt, key, table)) or nil
+	end,
+	decrypt = function(table, key)
+		local success, response = pcall(function()
+			table = ascii85.decode(table)
+			table = aes256.ECB(aes256.decrypt, key, table) or nil
+			table = game:GetService("HttpService"):JSONDecode(table)
+		end)
+		if not success then
+			return nil, response
+		end
+		return table
+	end,
+}
+
+		local room = pCsi.libs.sha_256().updateStr(table.concat(args)).finish()
 		local roomstr = room.asHex()
 
 		local _key = aes256.schedule256(tonumber("0x" .. roomstr))
@@ -143,7 +176,7 @@ local cmd = {
                     header = "sshPacket_in",
                     roomstr = roomstr,
                     ip = address,
-                    player = plra
+                    player = plra,
                     message = input
                 }, _key)
             )

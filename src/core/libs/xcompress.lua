@@ -1,140 +1,165 @@
--- Module by 1waffle1, optimized by boatbomber
--- https://devforum.roblox.com/t/text-compression/163637
+--[[
+MIT License
 
-local dictionary = {}
-do -- populate dictionary
-	local length = 0
-	for i = 32, 127 do
-		if i ~= 34 and i ~= 92 then
-			local c = string.char(i)
-			dictionary[c], dictionary[length] = length, c
-			length = length + 1
-		end
-	end
+Copyright (c) 2016 Rochet2
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
+local char = string.char
+local type = type
+local select = select
+local sub = string.sub
+local tconcat = table.concat
+
+local basedictcompress = {}
+local basedictdecompress = {}
+for i = 0, 255 do
+    local ic, iic = char(i), char(i, 0)
+    basedictcompress[ic] = iic
+    basedictdecompress[iic] = ic
 end
 
-local escapemap = {}
-do -- Populate escape map
-	for i = 1, 34 do
-		i = ({ 34, 92, 127 })[i - 31] or i
-		local c, e = string.char(i), string.char(i + 31)
-		escapemap[c], escapemap[e] = e, c
-	end
+local function dictAddA(str, dict, a, b)
+    if a >= 256 then
+        a, b = 0, b+1
+        if b >= 256 then
+            dict = {}
+            b = 1
+        end
+    end
+    dict[str] = char(a,b)
+    a = a+1
+    return dict, a, b
 end
 
-local function escape(s)
-	return string.gsub(s, '[%c"\\]', function(c)
-		return "\127" .. escapemap[c]
-	end)
-end
-local function unescape(s)
-	return string.gsub(s, "\127(.)", function(c)
-		return escapemap[c]
-	end)
-end
+local function compress(input)
+    if type(input) ~= "string" then
+        return nil, "string expected, got "..type(input)
+    end
+    local len = #input
+    if len <= 1 then
+        return "u"..input
+    end
 
-local function copy(t)
-	local new = {}
-	for k, v in pairs(t) do
-		new[k] = v
-	end
-	return new
-end
+    local dict = {}
+    local a, b = 0, 1
 
-local b93Cache = {}
-local function tobase93(n)
-	local value = b93Cache[n]
-	if value then
-		return value
-	end
-
-	value = ""
-	repeat
-		local remainder = n % 93
-		value = dictionary[remainder] .. value
-		n = (n - remainder) / 93
-	until n == 0
-
-	b93Cache[n] = value
-	return value
-end
-
-local b10Cache = {}
-local function tobase10(value)
-	local n = b10Cache[value]
-	if n then
-		return n
-	end
-
-	n = 0
-	for i = 1, #value do
-		n = n + 93 ^ (i - 1) * dictionary[string.sub(value, -i, -i)]
-	end
-
-	b10Cache[value] = n
-	return n
+    local result = {"c"}
+    local resultlen = 1
+    local n = 2
+    local word = ""
+    for i = 1, len do
+        local c = sub(input, i, i)
+        local wc = word..c
+        if not (basedictcompress[wc] or dict[wc]) then
+            local write = basedictcompress[word] or dict[word]
+            if not write then
+                return nil, "algorithm error, could not fetch word"
+            end
+            result[n] = write
+            resultlen = resultlen + #write
+            n = n+1
+            if  len <= resultlen then
+                return "u"..input
+            end
+            dict, a, b = dictAddA(wc, dict, a, b)
+            word = c
+        else
+            word = wc
+        end
+    end
+    result[n] = basedictcompress[word] or dict[word]
+    resultlen = resultlen+#result[n]
+    n = n+1
+    if  len <= resultlen then
+        return "u"..input
+    end
+    return tconcat(result)
 end
 
-local function compress(text)
-	local dictionaryCopy = copy(dictionary)
-	local key, sequence, size = "", {}, #dictionaryCopy
-	local width, spans, span = 1, {}, 0
-	local function listkey(k)
-		local value = tobase93(dictionaryCopy[k])
-		local valueLength = #value
-		if valueLength > width then
-			width, span, spans[width] = valueLength, 0, span
-		end
-		table.insert(sequence, string.rep(" ", width - valueLength) .. value)
-		span += 1
-	end
-	text = escape(text)
-	for i = 1, #text do
-		local c = string.sub(text, i, i)
-		local new = key .. c
-		if dictionaryCopy[new] then
-			key = new
-		else
-			listkey(key)
-			key = c
-			size += 1
-			dictionaryCopy[new], dictionaryCopy[size] = size, new
-		end
-	end
-	listkey(key)
-	spans[width] = span
-	return table.concat(spans, ",") .. "|" .. table.concat(sequence)
+local function dictAddB(str, dict, a, b)
+    if a >= 256 then
+        a, b = 0, b+1
+        if b >= 256 then
+            dict = {}
+            b = 1
+        end
+    end
+    dict[char(a,b)] = str
+    a = a+1
+    return dict, a, b
 end
 
-local function decompress(text)
-	local dictionaryCopy = copy(dictionary)
-	local sequence, spans, content = {}, string.match(text, "(.-)|(.*)")
-	local groups, start = {}, 1
-	for span in string.gmatch(spans, "%d+") do
-		local width = #groups + 1
-		groups[width] = string.sub(content, start, start + span * width - 1)
-		start = start + span * width
-	end
-	local previous
+local function decompress(input)
+    if type(input) ~= "string" then
+        return nil, "string expected, got "..type(input)
+    end
 
-	for width, group in ipairs(groups) do
-		for value in string.gmatch(group, string.rep(".", width)) do
-			local entry = dictionaryCopy[tobase10(value)]
-			if previous then
-				if entry then
-					table.insert(dictionaryCopy, previous .. string.sub(entry, 1, 1))
-				else
-					entry = previous .. string.sub(previous, 1, 1)
-					table.insert(dictionaryCopy, entry)
-				end
-				table.insert(sequence, entry)
-			else
-				sequence[1] = entry
-			end
-			previous = entry
-		end
-	end
-	return unescape(table.concat(sequence))
+    if #input < 1 then
+        return nil, "invalid input - not a compressed string"
+    end
+
+    local control = sub(input, 1, 1)
+    if control == "u" then
+        return sub(input, 2)
+    elseif control ~= "c" then
+        return nil, "invalid input - not a compressed string"
+    end
+    input = sub(input, 2)
+    local len = #input
+
+    if len < 2 then
+        return nil, "invalid input - not a compressed string"
+    end
+
+    local dict = {}
+    local a, b = 0, 1
+
+    local result = {}
+    local n = 1
+    local last = sub(input, 1, 2)
+    result[n] = basedictdecompress[last] or dict[last]
+    n = n+1
+    for i = 3, len, 2 do
+        local code = sub(input, i, i+1)
+        local lastStr = basedictdecompress[last] or dict[last]
+        if not lastStr then
+            return nil, "could not find last from dict. Invalid input?"
+        end
+        local toAdd = basedictdecompress[code] or dict[code]
+        if toAdd then
+            result[n] = toAdd
+            n = n+1
+            dict, a, b = dictAddB(lastStr..sub(toAdd, 1, 1), dict, a, b)
+        else
+            local tmp = lastStr..sub(lastStr, 1, 1)
+            result[n] = tmp
+            n = n+1
+            dict, a, b = dictAddB(tmp, dict, a, b)
+        end
+        last = code
+    end
+    return tconcat(result)
 end
 
-return { compress = compress, decompress = decompress }
+return {
+    compress = compress,
+    decompress = decompress,
+}
