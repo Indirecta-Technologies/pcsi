@@ -7,7 +7,7 @@ local cmd = {
 	displayOutput = true,
 	fn = function(plr, pCsi, essentials, args)
         local bfr = ""
-        function ASCIITable()
+        local function ASCIITable()
             local Ctrl = false -- set to true if ASCII<32 appear as valid chars
             local hl = "    +----------------+\n"
             bfr ..= ("ASCII Table:\n"..hl.."Hex |0123456789ABCDEF|\n"..hl)

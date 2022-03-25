@@ -81,7 +81,7 @@ local cmd = {
 
 			local textObject
 			local success, errorMessage = pcall(function()
-				textObject = TextService:FilterStringAsync(message, player)
+				textObject = TextService:FilterStringAsync(message, plr.UserId)
 			end)
 			if not success then
 				message = string.rep("_", #message).."; "..errorMessage

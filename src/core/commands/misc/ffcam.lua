@@ -13,12 +13,13 @@ local cmd = {
 
 		if method == "stream" then
             for i, v in ipairs(essentials.Output:GetAllDevices()) do
-                if v.SurfaceGui and v.DeviceType == "Monitor" and v.SurfaceGui:FindFirstChild("Background") then
+                if v.SurfaceGui and v.DeviceType == "Monitor" and v.SurfaceGui:FindFirstChild("Background") and v.Resolution.X == 1920 and v.Resolution.Y == 1080 then
                     local newcam = guicam:Clone()
                     newcam.Enabled = false
-    
-                    pCsi.io.write("Enter a camera name >")
-                    local came = pCsi.io.read()
+                    
+                    local came = args[2] and tostring(args[2]) or nil
+                    if not came then pCsi.io.write("Enter a camera name >"); came = pCsi.io.read() end
+                     
                     if camerafolder:FindFirstChild(came) then
                         newcam.CameraValue.Value = camerafolder:FindFirstChild(came)
                         pCsi.io.write("Set camera")

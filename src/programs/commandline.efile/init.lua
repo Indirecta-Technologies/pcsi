@@ -42,6 +42,31 @@ return function(Essentials, Efile)
 			return arg1 == "#" and #lm.vars or lm.vars
 		end
 
+		lm.io = {}
+
+		lm.io.read = function()
+			local input = nil
+			local oldparse = lm.parseCommand
+			function lm:parseCommand(...)
+				input = { ... }
+				table.remove(input, 1)
+				input = table.unpack(input)
+
+				task.spawn(function()
+					task.wait(0.5)
+					lm.parseCommand = oldparse
+				end)
+			end
+			repeat
+				task.wait()
+			until input
+			return input
+		end
+
+		lm.io.write = function(...)
+			Essentials.Console.info(...)
+		end
+
 		function lm:load(name, folder, recursiv)
 			if not folder or not name then
 				return
@@ -88,30 +113,6 @@ return function(Essentials, Efile)
 		lm:load(lm.vars["LIBS_DIR"], script[lm.vars["LIBS_DIR"]]:GetChildren())
 		lm:load(lm.vars["CMDS_DIR"], script[lm.vars["CMDS_DIR"]]:GetChildren())
 
-		lm.io = {}
-
-		lm.io.read = function()
-			local input = nil
-			local oldparse = lm.parseCommand
-			function lm:parseCommand(...)
-				input = { ... }
-				table.remove(input, 1)
-				input = table.unpack(input)
-
-				task.spawn(function()
-					task.wait(0.5)
-					lm.parseCommand = oldparse
-				end)
-			end
-			repeat
-				task.wait()
-			until input
-			return input
-		end
-
-		lm.io.write = function(...)
-			Essentials.Console.info(...)
-		end
 
 		local ArgParser = {
 			Trim = function(self, str: string)
