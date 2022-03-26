@@ -1,6 +1,6 @@
 local rbnsr = {
 	_IDENTITY    = "rbnsr",
-	_AUTHOR      = "Whim#2127",
+	_AUTHOR      = "Whim#2349",
 	_VERSION     = "v0.1",
 	_DESCRIPTION = "A Full Roblox DataType Serializer.",
 	_LICENSE = [[  MIT LICENSE
@@ -932,7 +932,4 @@ rbnsr.Deserialize = function(str)
 end
 
 
-
-
-throw("Initilization complete! Created " .. "by ".. rbnsr._AUTHOR)
 return rbnsr

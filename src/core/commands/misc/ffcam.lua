@@ -31,8 +31,9 @@ local cmd = {
                     pCsi.io.write(
                         "Starting stream.. -- Write anything to stop, write a valid CameraName to change to that camera"
                     )
-                    task.wait(4)
+                    task.wait(1)
                     newcam.ViewportCameraController.Disabled = false
+                    task.wait(2)
     
                     v.SurfaceGui:FindFirstChild("Background").Visible = false
                     newcam.Enabled = true
@@ -49,14 +50,17 @@ local cmd = {
                             v.SurfaceGui:FindFirstChild("Background").Visible = true
                             newcam.Enabled = false
                             newcam.CameraValue.Value = camerafolder:FindFirstChild(input)
-    
+                            newcam.ViewportFrame:ClearAllChildren()
                             task.wait(0.1)
     
                             newcam.ViewportCameraController.Disabled = false
                             v.SurfaceGui:FindFirstChild("Background").Visible = false
                             newcam.Enabled = true
+                        elseif input == "shoot" then
+                            print(pCsi.libs.rbnsr.Serialize(newcam.ViewportFrame:GetDescendants()))
                         else
                             newcam.ViewportCameraController.Disabled = true
+                            newcam.ViewportFrame:ClearAllChildren()
                             task.wait(0.1)
                             newcam.Enabled = false
                             v.SurfaceGui:FindFirstChild("Background").Visible = true
