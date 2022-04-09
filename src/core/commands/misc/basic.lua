@@ -157,18 +157,6 @@ and you are all set.
 					end
 				elseif args[1] == "LOAD" then
 					local status, err = pcall(function()
-						lines = {}
-						if fs and fs.open then -- computercraft
-							local file = fs.open(args[2], "r")
-							local data = file.readAll("*all")
-							for dataline in data:gmatch("[^\n]+") do
-								if #dataline > 0 then
-									local linenum, statements = split_num_and_statements(dataline)
-									lines[linenum] = statements
-								end
-							end
-							file.close()
-						else
 							local data = assert(pCsi.xfs.read(args[2]))
 							for dataline in data:gmatch("[^\n]+") do
 								if #dataline > 0 then
@@ -176,7 +164,6 @@ and you are all set.
 									lines[linenum] = statements
 								end
 							end
-						end
 					end)
 					if err then
 						if _TBASIC.SHOWLUAERROR then

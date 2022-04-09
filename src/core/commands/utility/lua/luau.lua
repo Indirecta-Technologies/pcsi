@@ -204,7 +204,10 @@ local cmd = {
 		local function docall(f, ...)
 			local tp = { ... } -- no need in tuple (string arguments only)
 			local F = function()
-				return f(unpack(tp))--type(f) == "function" and f(unpack(tp)) or f
+				--print("1"..type(f),unpack(tp))
+				local res = type(f) == "function" and f(unpack(tp))--type(f) == "function" and f(unpack(tp)) or f
+				--print("2"..type(res), tostring(res))
+				return res
 			end
 			setsignal(true)
 			local result = tuple(xpcall(F, traceback))

@@ -32,7 +32,20 @@ return function(Essentials, Efile)
 		lm.fileTypeBindings = {}
 		--lm.libs = {}
 
+
+		-- improve all of this code
+	
+
 		lm.vars = {}
+
+		lm.cleanString = function(str)
+			return string.gsub(str, "[^\x00-\x7F]", "")
+			:gsub("&", "&amp;")
+			:gsub("<", "&lt;")
+			:gsub(">", "&gt;")
+			:gsub('"', "&quot;")
+			:gsub("'", "&apos;")
+		end
 
 		lm.setVar = function(i, v)
 			rawset(lm.vars, i, v)
@@ -348,6 +361,8 @@ return function(Essentials, Efile)
 			end
 		end
 
+
+
 		function lm:parseCommand(plr, fEStr)
 			fEStr = string.match(fEStr, "^%s*(.-)%s*$")
 
@@ -428,7 +443,7 @@ return function(Essentials, Efile)
 						stat = 1
 					else
 						stat = 0
-					end
+					end 
 				elseif arg == Enum.KeyCode.RightAlt then
 					if stat == 1 then
 						stat = 2

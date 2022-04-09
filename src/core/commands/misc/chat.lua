@@ -150,7 +150,7 @@ local cmd = {
 		end)
 
 		essentials.Output:OutputToAll("ClearScreen")
-		local text = "Joined chatroom <b>" .. string.upper(roomstr:sub(1, 16)) .. "</b>, use '!q' to leave"
+		local text = "Joined chatroom <b>" .. string.upper(roomstr:sub(1, 16)) .. (table.concat(args) == "" and " (default)" or "") .. "</b>, use '!q' to leave"
 		pCsi.io.write(text)
 
 		local function startSession(plra)
