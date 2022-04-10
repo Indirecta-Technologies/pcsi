@@ -1,6 +1,6 @@
 # pcsi
 Open source command line for Indirecta Xinu HSE
-Note: This is an execution file/program/application for the Indirecta Xinu HSE platform. This program is free open source software, while the Xinu HSE Platform is a licensed, obfuscated, paid software that costs 60R$, if you are contributing to this project, you can either buy the license and develop directly on Xinu, or make changes that will be tested by me (Lxi099 or FireAlarmManBeta)
+Note: This is an execution file/program/application for the Indirecta Xinu HSE platform. This program is free open source software, that is made to run on a closed-source proprietary Platform, if you are contributing to this project, you can either buy the license and develop directly on The Platform, or make changes that will be tested by me (Lxi099 or FireAlarmManBeta)
 
 Pcsi uses a file system similiar to Block OS' file system. In fact, it is a modification of the module, named xfsm. It can currently compress(?) files, make directories, make files, change current working directory, rename files, delete files, read files, write files, append to files, with last edit, creation date, name, and mode, that can be changed using the chmod command. Soon it could support encryption (AES256)
 
