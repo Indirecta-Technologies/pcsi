@@ -4,8 +4,6 @@
     "$className": "DataModel",
 
     "ServerScriptService": {
-      "Programs": {
-        "$className": "Folder",
         "commandline.efile": {
           "$path": "src/programs/commandline.efile",
           "libs": {
@@ -66,7 +64,6 @@
             }
           }
         }
-      }
     }
   }
 }
