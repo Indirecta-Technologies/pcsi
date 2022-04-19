@@ -977,7 +977,7 @@ local cmd = {
 				return
 			elseif _sItem == "self" or _sItem == "myself" then
 				
-				pCsi.io.write("You have died.")
+				pCsi.io.write("<font color='rgb(182, 39, 39)'>You have died.</font>")
 				pCsi.io.write("Score: &e0")
 				bRunning = false
 				return
@@ -1067,7 +1067,7 @@ local cmd = {
 					"By creating a computer in a computer in a computer, you tear a hole in the spacetime continuum from which no mortal being can escape."
 				)
 				
-				pCsi.io.write("You have died.")
+				pCsi.io.write("<font color='rgb(182, 39, 39)'>You have died.</font>")
 				pCsi.io.write("Score: &e0")
 				bRunning = false
 				return
@@ -1147,7 +1147,7 @@ local cmd = {
 		end
 
 		function commands.help()
-			local sText = "Welcome to adventure, the greatest text adventure game on pCsi (ported from OpenComputers CraftOS). "
+			local sText = "Welcome to adventure, the greatest text adventure game on pCsi (ported from ComputerCraft CraftOS). "
 				.. "To get around the world, type actions, and the adventure will "
 				.. "be read back to you. The actions availiable to you are go, look, inspect, inventory, "
 				.. "take, drop, place, punch, attack, mine, dig, craft, build, eat and exit."
@@ -1172,7 +1172,7 @@ local cmd = {
 				inventory[sItem] = nil
 
 				if bInjured then
-					pCsi.io.write("You are no longer injured.")
+					pCsi.io.write("<font color='8, 211, 59'>You are no longer injured.</font>")
 					bInjured = false
 				end
 			else
@@ -1287,7 +1287,7 @@ local cmd = {
 
 							if bInjured then
 							
-								pCsi.io.write("You have died.")
+								pCsi.io.write("<font color='rgb(182, 39, 39)'>You have died.</font>")
 								pCsi.io.write("Score: &e0")
 								bRunning = false
 								return
@@ -1303,8 +1303,7 @@ local cmd = {
 
 			-- Always pCsi.io.write this
 			if bInjured then
-			
-				pCsi.io.write("You are injured.")
+				pCsi.io.write("<font color='rgb(226, 118, 17)'>You are injured.</font>")
 			end
 
 			-- Advance time
