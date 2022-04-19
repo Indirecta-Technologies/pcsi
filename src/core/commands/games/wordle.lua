@@ -32,7 +32,7 @@ while true do
   | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
    '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
    
-   <font color='rgb(24, 238, 95)'><b>Green</b></font>: The letter is in the world and in the correct spot
+   <font color='rgb(24, 238, 95)'><b>Green</b></font>: The letter is in the word and in the correct spot
    <font color='rgb(238, 234, 24)'><i>Yellow</i></font>: The letter is in the word but in the wrong spot
    <font color='rgb(185, 185, 185)'><s>Gray</s></font>: The letter is not in the word in any spot
    ]])
