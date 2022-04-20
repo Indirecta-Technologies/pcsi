@@ -15,27 +15,30 @@ local cmd = {
   local resultstr = ''
   task.wait(0.1)
   essentials.Output:OutputToAll("ClearScreen")
+  local welcometext = [[
+    .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
+   | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+   | | <font color='rgb(185, 185, 185)'>_____  _____</font> | || |     <font color='rgb(238, 234, 24)'>____</font>     | || |  <font color='rgb(238, 234, 24)'>_______</font>     | || |  <font color='rgb(185, 185, 185)'>________</font>    | || |   <font color='rgb(24, 238, 95)'>_____</font>      | || |  <font color='rgb(24, 238, 95)'>_________</font>   | |
+   | |<font color='rgb(185, 185, 185)'>|_   _||_   _|</font>| || |   <font color='rgb(238, 234, 24)'>.'    `</font>.   | || | <font color='rgb(238, 234, 24)'>|_   __ \</font>    | || | <font color='rgb(185, 185, 185)'>|_   ___ `.</font>  | || |  <font color='rgb(24, 238, 95)'>|_   _|</font>     | || | <font color='rgb(24, 238, 95)'>|_   ___  |</font>  | |
+   | |  <font color='rgb(185, 185, 185)'>| | /\ | |</font>  | || |  <font color='rgb(238, 234, 24)'>/  .--.  \</font>  | || |   <font color='rgb(238, 234, 24)'>| |__) |</font>   | || |   <font color='rgb(185, 185, 185)'>| |   `. \</font> | || |    <font color='rgb(24, 238, 95)'>| |</font>       | || |   <font color='rgb(24, 238, 95)'>| |_  \_|</font>  | |
+   | |  <font color='rgb(185, 185, 185)'>| |/  \| |</font>  | || |  <font color='rgb(238, 234, 24)'>| |    | |</font>  | || |   <font color='rgb(238, 234, 24)'>|  __ /</font>    | || |   <font color='rgb(185, 185, 185)'>| |    | |</font> | || |    <font color='rgb(24, 238, 95)'>| |</font>   _   | || |   <font color='rgb(24, 238, 95)'>|  _|  _</font>   | |
+   | |  <font color='rgb(185, 185, 185)'>|   /\   |</font>  | || |  <font color='rgb(238, 234, 24)'>\  `--'  /</font>  | || |  <font color='rgb(238, 234, 24)'>_| |  \ \_</font>  | || |  <font color='rgb(185, 185, 185)'>_| |___.' /</font> | || |   <font color='rgb(24, 238, 95)'>_| |__/ |</font>  | || |  _<font color='rgb(24, 238, 95)'>| |___/ |</font>  | |
+   | |  <font color='rgb(185, 185, 185)'>|__/  \__|</font>  | || |   <font color='rgb(238, 234, 24)'>`.____.'</font>   | || | <font color='rgb(238, 234, 24)'>|____| |___|</font> | || | <font color='rgb(185, 185, 185)'>|________.'</font>  | || |  <font color='rgb(24, 238, 95)'>|________|</font>  | || | <font color='rgb(24, 238, 95)'>|_________|</font>  | |
+   | |              | || |              | || |              | || |              | || |              | || |              | |
+   | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+    '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+    
+    <font color='rgb(24, 238, 95)'><b>Green</b></font>: The letter is in the word and in the correct spot
+    <font color='rgb(238, 234, 24)'><i>Yellow</i></font>: The letter is in the word but in the wrong spot
+    <font color='rgb(185, 185, 185)'><s>Gray</s></font>: The letter is not in the word in any spot
+    ]]
+    pCsi.io.write(welcometext)
+    
 while true do
     local newguess = pCsi.io.read()
     local output = game:guess(newguess)
     essentials.Output:OutputToAll("ClearScreen")
-    pCsi.io.write([[
-   .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
-  | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
-  | | <font color='rgb(185, 185, 185)'>_____  _____</font> | || |     <font color='rgb(238, 234, 24)'>____</font>     | || |  <font color='rgb(238, 234, 24)'>_______</font>     | || |  <font color='rgb(185, 185, 185)'>________</font>    | || |   <font color='rgb(24, 238, 95)'>_____</font>      | || |  <font color='rgb(24, 238, 95)'>_________</font>   | |
-  | |<font color='rgb(185, 185, 185)'>|_   _||_   _|</font>| || |   <font color='rgb(238, 234, 24)'>.'    `</font>.   | || | <font color='rgb(238, 234, 24)'>|_   __ \</font>    | || | <font color='rgb(185, 185, 185)'>|_   ___ `.</font>  | || |  <font color='rgb(24, 238, 95)'>|_   _|</font>     | || | <font color='rgb(24, 238, 95)'>|_   ___  |</font>  | |
-  | |  <font color='rgb(185, 185, 185)'>| | /\ | |</font>  | || |  <font color='rgb(238, 234, 24)'>/  .--.  \</font>  | || |   <font color='rgb(238, 234, 24)'>| |__) |</font>   | || |   <font color='rgb(185, 185, 185)'>| |   `. \</font> | || |    <font color='rgb(24, 238, 95)'>| |</font>       | || |   <font color='rgb(24, 238, 95)'>| |_  \_|</font>  | |
-  | |  <font color='rgb(185, 185, 185)'>| |/  \| |</font>  | || |  <font color='rgb(238, 234, 24)'>| |    | |</font>  | || |   <font color='rgb(238, 234, 24)'>|  __ /</font>    | || |   <font color='rgb(185, 185, 185)'>| |    | |</font> | || |    <font color='rgb(24, 238, 95)'>| |</font>   _   | || |   <font color='rgb(24, 238, 95)'>|  _|  _</font>   | |
-  | |  <font color='rgb(185, 185, 185)'>|   /\   |</font>  | || |  <font color='rgb(238, 234, 24)'>\  `--'  /</font>  | || |  <font color='rgb(238, 234, 24)'>_| |  \ \_</font>  | || |  <font color='rgb(185, 185, 185)'>_| |___.' /</font> | || |   <font color='rgb(24, 238, 95)'>_| |__/ |</font>  | || |  _<font color='rgb(24, 238, 95)'>| |___/ |</font>  | |
-  | |  <font color='rgb(185, 185, 185)'>|__/  \__|</font>  | || |   <font color='rgb(238, 234, 24)'>`.____.'</font>   | || | <font color='rgb(238, 234, 24)'>|____| |___|</font> | || | <font color='rgb(185, 185, 185)'>|________.'</font>  | || |  <font color='rgb(24, 238, 95)'>|________|</font>  | || | <font color='rgb(24, 238, 95)'>|_________|</font>  | |
-  | |              | || |              | || |              | || |              | || |              | || |              | |
-  | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
-   '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
-   
-   <font color='rgb(24, 238, 95)'><b>Green</b></font>: The letter is in the word and in the correct spot
-   <font color='rgb(238, 234, 24)'><i>Yellow</i></font>: The letter is in the word but in the wrong spot
-   <font color='rgb(185, 185, 185)'><s>Gray</s></font>: The letter is not in the word in any spot
-   ]])
+    pCsi.io.write(welcometext)
    
    local addword = true
 

@@ -126,6 +126,7 @@ local cmd = {
 		environment.utf8 = utf8
 		environment._G = essentials.Freestore
 		environment._VERSION = LUA_RELEASE
+		environment.tonumber = tonumber
 
 		-- Use external functions, if available
 		local lua_stdin_is_tty = function()

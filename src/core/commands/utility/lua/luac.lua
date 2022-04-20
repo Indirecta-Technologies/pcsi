@@ -98,6 +98,7 @@ local cmd = {
 		environment.loadstring = function(...) 
 		return fione(..., nil, environment)
 		end
+		environment.tonumber = tonumber
 
 
 

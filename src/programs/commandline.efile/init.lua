@@ -77,7 +77,87 @@ return function(Essentials, Efile)
 		end
 
 		lm.io.write = function(...)
-			Essentials.Console.info(...)
+			local str = table.concat({...}," ")
+
+			-- Turn ANSI Sequences into Roblox RichText tags
+			local colors = 0
+			local function append(s)
+			str ..= s
+			end
+			str = str:gsub("\x1b%[(%d+)m", function(c)
+				local color = tonumber(c)
+				print(color)
+				if color == 0 then
+					str = str:gsub("<[^>]+>","")
+					return ""
+				elseif color == 1 then
+					return "<b>"
+				elseif color == 3 then
+					return "<i>"
+				elseif color == 4 then
+					return "<u>"
+				elseif color == 30 then
+					return "<font color='#000000'>"
+				elseif color == 31 then
+					return "<font color='#FF0000'>"
+				elseif color == 32 then
+					return "<font color='#00FF00'>"
+				elseif color == 33 then
+					return "<font color='#FFFF00'>"
+				elseif color == 34 then
+					return "<font color='#0000FF'>"
+				elseif color == 35 then
+					return "<font color='#FF00FF'>"
+				elseif color == 36 then
+					return "<font color='#00FFFF'>"
+				elseif color == 37 then
+					return "<font color='#FFFFFF'>"
+				else
+					return ""
+				end
+			end)
+			-- For every tag add it's corresponding closing tag to the string in reverse order
+			
+
+			for i = #str, 1, -1  do
+				if str:sub(i, i) == "<" then
+					local j = i
+					while str:sub(j, j) ~= " " and str:sub(j, j) ~= ">" do
+						task.wait()
+						j = j + 1
+					end
+					local tag = str:sub(i, j)
+					str ..= "</" .. tag:sub(2, -2) .. ">"
+
+					-- Addstr = str:gsub(tag, tag .. "</" .. tag:sub(2, -2) .. ">")
+				end
+			end
+
+
+			-- Close each richtext tag in the string
+			--str = str:gsub("<[^>]+>", "</>")
+
+
+			
+			
+
+			print(str)
+
+
+		
+				
+			-- Parse ANSI Bell Character and call function if found
+			str = str:gsub("\x07", function(str)
+				-- Sound a Bell/Beep?
+				return str
+			end)
+			-- Parse ANSI Clear Screen Character and call function if found
+			str = str:gsub("\x1b%[2J", function(str)
+				Essentials.Output:OutputToAll("ClearScreen")
+				return str
+			end)
+
+			Essentials.Console.info(str)
 		end
 
 		function lm:load(name, folder, recursiv)
@@ -361,30 +441,60 @@ return function(Essentials, Efile)
 			end
 		end
 
+		lm.vars["SH_HEADER"] = "<b>%plr</b> %path&gt; %cmd"
+
+		-- Determine text x and y from rows and columns in TextLabel text
+		local function getTextXY(text, rows, cols)
+			local x = 0
+			local y = 0
+			local i = 1
+			local j = 1
+			local len = #text
+			while i <= len do
+				if text:sub(i, i) == "\n" then
+					y = y + 1
+					x = 0
+					i = i + 1
+				elseif x == cols then
+					y = y + 1
+					x = 0
+					i = i + 1
+				else
+					x = x + 1
+					i = i + 1
+				end
+				if y == rows then
+					break
+				end
+			end
+			return x, y
+		end
+		-- Blink a | character as a cursor in the text
+		local function blinkCursor(text, x, y)
+			local len = #text
+			local i = 1
+			local j = 1
+			while i <= len do
+				if text:sub(i, i) == "\n" then
+					j = j + 1
+					i = i + 1
+				elseif j == y and i == x then
+					return text:sub(1, i - 1) .. "|" .. text:sub(i + 1)
+				else
+					i = i + 1
+				end
+			end
+			return text
+		end
+		
 
 
 		function lm:parseCommand(plr, fEStr)
 			fEStr = string.match(fEStr, "^%s*(.-)%s*$")
 
 			local time = os.date("%Y/%m/%d %H:%M:%S", os.time())
-			Essentials.Console.info("┌ " .. time)
-			task.spawn(function()
-				wait(0.3)
-				Essentials.Console.info(
-					"└ "
-						.. "<b>"
-						.. plr.Name
-						.. "</b> "
-						.. self.xfs.fullCwd()
-						.. "&gt; "
-						.. fEStr
-							:gsub("&", "&amp;")
-							:gsub("<", "&lt;")
-							:gsub(">", "&gt;")
-							:gsub('"', "&quot;")
-							:gsub("'", "&apos;")
-				)
-			end)
+			Essentials.Console.info(table.pack(lm.vars["SH_HEADER"]:gsub("%%plr",plr.Name):gsub("%%path",self.xfs.fullCwd()):gsub("%%cmd",fEStr))[1])
+
 			local fLStr = string.split(fEStr, " > ") or fEStr
 
 			for i, v in ipairs(fLStr) do
