@@ -93,6 +93,7 @@ return function(Essentials, Efile)
 			local function append(s)
 			str ..= s
 			end
+		
 			str = str:gsub("\x1b%[(%d+)m", function(c)
 				local color = tonumber(c)
 				print(color)
