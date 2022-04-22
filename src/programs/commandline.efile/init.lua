@@ -42,6 +42,11 @@ return function(Essentials, Efile)
 
 		lm.vars = {}
 
+		-- sanitize string function
+		lm.sanitizeStr = function(str)
+			return str:gsub("[^%w%s]", "")
+		end
+
 		lm.cleanString = function(str)
 			return string.gsub(str, "[^\x00-\x7F]", "")
 			:gsub("&", "&amp;")
@@ -153,6 +158,7 @@ return function(Essentials, Efile)
 			-- Parse ANSI Bell Character and call function if found
 			str = str:gsub("\x07", function(str)
 				-- Sound a Bell/Beep?
+				Essentials.Output:OutputToAll("Bell")
 				return str
 			end)
 			-- Parse ANSI Clear Screen Character and call function if found
