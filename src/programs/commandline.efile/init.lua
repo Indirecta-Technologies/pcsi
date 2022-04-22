@@ -2,7 +2,11 @@
   ___ / _(_) | ___ 
  / _ \ |_| | |/ _ \
 |  __/  _| | |  __/
- \___|_| |_|_|\___|                                                                                                                                                                                                       --]]
+ \___|_| |_|_|\___|
+
+There's more to life
+    than amogus!
+--]]
 local module = {}--[[
                    ]]
 
@@ -469,6 +473,7 @@ return function(Essentials, Efile)
 			end
 			return x, y
 		end
+
 		-- Blink a | character as a cursor in the text
 		local function blinkCursor(text, x, y)
 			local len = #text
@@ -486,8 +491,6 @@ return function(Essentials, Efile)
 			end
 			return text
 		end
-		
-
 
 		function lm:parseCommand(plr, fEStr)
 			fEStr = string.match(fEStr, "^%s*(.-)%s*$")
@@ -572,10 +575,12 @@ return function(Essentials, Efile)
 					stat = 0
 				end
 			end
+
 			if mode == "newOutput" then
 				lm.onNewOutput:Fire(plr, arg)
 				lm:parseCommand(plr, arg)
 			end
+
 			if mode == "newOutput" then
 				lm.onUpdatedOutput:Fire(plr, arg)
 			end
@@ -596,6 +601,7 @@ return function(Essentials, Efile)
 	function Efile:construct(instance: Instance)
 		Efile:Start()
 	end
+
 	function Efile:destroy(instance: Instance)
 		Efile:Stop()
 	end
