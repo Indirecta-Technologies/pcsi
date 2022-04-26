@@ -19,7 +19,7 @@ local cmd = {
 		return #diff == 0 and "(empty)" or table.concat(diff, "\n")]]
 
 		local output = pCsi.libs.diff(file1,file2).to_richtext()
-		essentials.Console.info(output)
+		pCsi.io.write(output)
 	end,
 }
 

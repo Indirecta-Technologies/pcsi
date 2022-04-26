@@ -27,7 +27,7 @@ local cmd = {
 			if not device or not device.Name or not device.Identifier then
 				return essentials.Console.warn("Invalid device object passed to function")
 			end
-			essentials.Console.info(
+			pCsi.io.write(
 				"Name: "..device.Name.."\n"..
 				"Identifier: "..device.Name.."\n"..
 				"Device Type: "..device.DeviceType.."\n"..
@@ -42,7 +42,7 @@ local cmd = {
 			for i,v in pairs(essentials.Output:GetAllDevices()) do
 				buffer = buffer.."\n"..i..", "..v.Identifier..", "..v.Name
 			end
-			return essentials.Console.info(buffer)
+			return pCsi.io.write(buffer)
 		elseif args[1] == "name" then
 			device = essentials.Output:GetDeviceByName(args[2])
 		elseif args[1] == "index" then

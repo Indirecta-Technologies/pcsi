@@ -18,12 +18,12 @@ local cmd = {
             local name = obj.Name
             obj = pCsi.xfs.read(name)
 
-			essentials.Console.info("[Markov-Chain] :: Studying ".. name .." source ".."; "..bytes.." size")
+			pCsi.io.write("[Markov-Chain] :: Studying ".. name .." source ".."; "..bytes.." size")
 			markov:Study(obj,studyPunctuation)
         end
 
 
-		essentials.Console.info("[Markov-Chain] :: Generating output of "..size.." words..")
+		pCsi.io.write("[Markov-Chain] :: Generating output of "..size.." words..")
 		local output = markov:Generate(args)
         return output
 

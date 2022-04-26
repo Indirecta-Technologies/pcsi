@@ -40,7 +40,7 @@ local cmd = {
 			'"You were worth it, old friend, and a thousand times over." - Where the red fern grows.';
 		}
 		local quote = quotes[math.random(1,#quotes)]
-		essentials.Console.info("Quote of the day: "..quote)
+		pCsi.io.write("Quote of the day: "..quote)
 	end,
 }
 

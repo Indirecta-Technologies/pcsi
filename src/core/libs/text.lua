@@ -1,6 +1,7 @@
 
 local text = {}
 
+text.internal={}
 
 
 

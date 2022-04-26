@@ -20,7 +20,7 @@ return {
 					math.round((v.endTime and v.endTime-v.startTime or 0) * 10) / 10
 				)
 			end
-			essentials.Console.info(buffer)
+			pCsi.io.write(buffer)
 		else
 			local programName = assert(args[2], "Second argument/program name not specified")
 			local program = essentials.Efile:GetEfileByName(programName)
@@ -28,11 +28,11 @@ return {
 			if program then
 				local commandModes = {
 					["start"] = function()
-						--essentials.Console.info("Starting '"..pname.."' ("..program.index..")")
+						--pCsi.io.write("Starting '"..pname.."' ("..program.index..")")
 						program:start()
 					end,
 					["stop"] = function()
-						essentials.Console.info(string.format("Stopping %s (%s)", programName, program.index))
+						pCsi.io.write(string.format("Stopping %s (%s)", programName, program.index))
 						program:interrupt()
 					end,
 					["track"] = function()
@@ -49,7 +49,7 @@ return {
 								str ..= i..": "..tostring(v).."\n"
 							end
 						end
-						essentials.Console.info(str)
+						pCsi.io.write(str)
 					end,
 				}
 

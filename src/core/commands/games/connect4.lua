@@ -111,8 +111,8 @@ local cmd = {
 			end
 
 			buffer ..= "-------"
-			essentials.Console.info(buffer)
-			essentials.Console.info()
+			pCsi.io.write(buffer)
+			pCsi.io.write()
 		end
 
 		local function get_other_symbol(symbol)
@@ -138,9 +138,9 @@ local cmd = {
 
 			local got_input, row, column
 
-			essentials.Console.info(name .. ", make your move!")
+			pCsi.io.write(name .. ", make your move!")
 
-			essentials.Console.info("Enter the column (1 to 7)")
+			pCsi.io.write("Enter the column (1 to 7)")
 
       args = pCsi.io.read()
 
@@ -151,7 +151,7 @@ local cmd = {
 				board[row][column] = symbol
 				got_input = true
 			else
-				essentials.Console.info("You can't go there")
+				pCsi.io.write("You can't go there")
 			end
 
 
@@ -275,19 +275,19 @@ local cmd = {
 			if player_symbol == 1 then
 				the_player_makes_a_move(board, "Human", player_symbol)
 				if this_player_has_won(board, player_symbol) then
-					essentials.Console.info("** " .. player_symbol .. ":HUMAN WINS **")
+					pCsi.io.write("** " .. player_symbol .. ":HUMAN WINS **")
 					game_in_play = false
 				end
 			else
 				the_computer_makes_a_move(board, player_symbol)
 				if this_player_has_won(board, player_symbol) then
-					essentials.Console.info("** " .. get_other_symbol(player_symbol) .. ":COMPUTER WINS **")
+					pCsi.io.write("** " .. get_other_symbol(player_symbol) .. ":COMPUTER WINS **")
 					game_in_play = false
 				end
 			end
 
 			if game_in_play and no_moves_left(board) then
-				essentials.Console.info("** DRAW! **")
+				pCsi.io.write("** DRAW! **")
 				game_in_play = false
 			else
 				player_symbol = get_other_symbol(player_symbol)

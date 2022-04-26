@@ -73,7 +73,7 @@ local cmd = {
 			local function onfinish()
 				pCsi.io.write(buffer)
 				local tapel = #tape
-				essentials.Console.info(
+				pCsi.io.write(
 					"[brainfudge] :: Ended execution. ("
 						.. pCsi.xfs:formatBytesToUnits(math.round((tapel ^ 2) / 256 * 100) / 100)
 						.. " bfr size, "
@@ -216,7 +216,7 @@ local cmd = {
 
 				[","] = function()
 					if input == "" then
-						essentials.Console.info("[brainfudge] :: Awaiting for input..")
+						pCsi.io.write("[brainfudge] :: Awaiting for input..")
 						input = pCsi.io.read()
 					end
 					tape[pointer] = string.byte(string.sub(input, inputp, inputp)) or 0
@@ -225,7 +225,7 @@ local cmd = {
 			}
 
 			task.spawn(function()
-				essentials.Console.info("[brainfudge] :: Executing script..")
+				pCsi.io.write("[brainfudge] :: Executing script..")
 				while codep <= #str and continue_ do
 					MaybeYield()
 

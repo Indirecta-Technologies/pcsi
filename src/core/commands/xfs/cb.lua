@@ -9,7 +9,7 @@ local cmd = {
 			table.insert(buffer, obj.Name.."; Size: "..(pCsi.xfs:totalBytesInInstance(obj.Name).."siB" or "?").."; Type: "..(pCsi.xfs.type(obj.Name) or "?"))				
 		end
 		buffer = table.concat(buffer,";\n")
-		essentials.Console.info(buffer)
+		pCsi.io.write(buffer)
 	end,
 }
 

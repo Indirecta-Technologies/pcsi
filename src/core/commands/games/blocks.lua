@@ -14,8 +14,8 @@ local cmd = {
     local function show_board(board)
       local r, c
     
-      essentials.Console.info("  UUUU")
-      essentials.Console.info(" +----+")
+      pCsi.io.write("  UUUU")
+      pCsi.io.write(" +----+")
       local buffer = ""
       for r=1,4 do
         buffer ..=("L:")
@@ -31,7 +31,7 @@ local cmd = {
       buffer ..=(" +----+")
       buffer ..=("  DDDD")
       buffer ..= "\n"
-      essentials.Console.info(buffer)
+      pCsi.io.write(buffer)
     end
     
     local function add_blocks_at_random(number)
@@ -105,12 +105,12 @@ local cmd = {
     
       waiting_for_input = true
       
-      essentials.Console.info("Enter a direction to move: U, D, L or R")
+      pCsi.io.write("Enter a direction to move: U, D, L or R")
 
       local here = ""
 
       args = pCsi.io.read()
-      essentials.Console.info(" "..args)
+      pCsi.io.write(" "..args)
         args = string.split(args, " ")[1]
         if args == 'U' or args == 'u' then
              args = 'u'
@@ -126,7 +126,7 @@ local cmd = {
               return
             else
               waiting_for_input = true
-              essentials.Console.info("That was not a valid instruction")
+              pCsi.io.write("That was not a valid instruction")
             end
           here = args
     

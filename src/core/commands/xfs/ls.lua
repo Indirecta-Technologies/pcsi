@@ -12,7 +12,7 @@ local cmd = {
 				table.insert(buffer, obj.Name.."; Size: "..bytes.."; Type: "..(pCsi.xfs.type(obj.Name) or "?").."; Mime: "..pCsi.xfs:fileType(obj.Name))				
 			end
 			buffer = table.concat(buffer,";\n")
-			essentials.Console.info(buffer)
+			pCsi.io.write(buffer)
 		else
 			local buffer = {}
 			local i = 0
@@ -30,7 +30,7 @@ local cmd = {
 				i += 1
 			end
 			buffer = table.concat(buffer,"  ")
-			essentials.Console.info(buffer)
+			pCsi.io.write(buffer)
 		end
 	end,
 }

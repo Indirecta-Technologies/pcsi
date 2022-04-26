@@ -5,7 +5,7 @@ local cmd = {
 	usage = [[$ ]],
 	fn = function(plr, pCsi, essentials, args)
 		pCsi.xfs.paste(args[1])
-		essentials.Console.info("Pasted "..args[1].." from Clipboard to "..pCsi.xfs.cwd())
+		pCsi.io.write("Pasted "..args[1].." from Clipboard to "..pCsi.xfs.cwd())
 
 	end,
 }

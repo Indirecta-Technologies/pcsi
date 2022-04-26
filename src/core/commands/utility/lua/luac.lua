@@ -43,7 +43,7 @@ local cmd = {
 		end
 
 		environment.math = math
-		environment.print = essentials.Console.info
+		environment.print = pCsi.io.write
 		environment.warn = essentials.Console.warn
 		environment.error = essentials.Console.error
 

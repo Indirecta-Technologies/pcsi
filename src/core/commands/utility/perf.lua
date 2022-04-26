@@ -19,7 +19,7 @@ local cmd = {
 		}
 
 		]]
-		essentials.Console.info("-- System Performance --\n"..
+		pCsi.io.write("-- System Performance --\n"..
 			"Clock Speed: "..perf.ClockSpeed.." "..perf.Units[1].."\n"..
 			"Clock Jitter: "..perf.ClockJitter.." "..perf.Units[2].."\n"..
 			"GCMemory: "..perf.GCMemory.." "..perf.Units[3].."\n"..

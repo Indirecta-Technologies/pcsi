@@ -90,14 +90,16 @@ return function(Essentials, Efile)
 
 			-- Turn ANSI Sequences into Roblox RichText tags
 			local colors = 0
-			local function append(s)
-			str ..= s
-			end
-		
+			
 			str = str:gsub("\x1b%[(%d+)m", function(c)
 				local color = tonumber(c)
-				print(color)
+				if colors == 0 then --remove all richtext tags in the string if using ansi
+					str = str:gsub("</[^>]+>", "")
+					str = str:gsub("<[^>]+>","")
+				end
+				colors += 1
 				if color == 0 then
+					str = str:gsub("</[^>]+>", "")
 					str = str:gsub("<[^>]+>","")
 					return ""
 				elseif color == 1 then
@@ -128,33 +130,26 @@ return function(Essentials, Efile)
 			end)
 			-- For every tag add it's corresponding closing tag to the string in reverse order
 			
-
-			for i = #str, 1, -1  do
-				if str:sub(i, i) == "<" then
-					local j = i
-					while str:sub(j, j) ~= " " and str:sub(j, j) ~= ">" do
-						task.wait()
-						j = j + 1
+			if not colors == 0 then
+				for i = #str, 1, -1  do
+					if str:sub(i, i) == "<" then
+						local j = i
+						while str:sub(j, j) ~= " " and str:sub(j, j) ~= ">" do
+							task.wait()
+							j = j + 1
+						end
+						local tag = str:sub(i, j)
+						str ..= "</" .. tag:sub(2, -2) .. ">"
+	
+						-- Addstr = str:gsub(tag, tag .. "</" .. tag:sub(2, -2) .. ">")
 					end
-					local tag = str:sub(i, j)
-					str ..= "</" .. tag:sub(2, -2) .. ">"
-
-					-- Addstr = str:gsub(tag, tag .. "</" .. tag:sub(2, -2) .. ">")
 				end
 			end
+		
 
 
 			-- Close each richtext tag in the string
 			--str = str:gsub("<[^>]+>", "</>")
-
-
-			
-			
-
-			print(str)
-
-
-		
 				
 			-- Parse ANSI Bell Character and call function if found
 			str = str:gsub("\x07", function(str)
@@ -187,6 +182,7 @@ return function(Essentials, Efile)
 				end
 				if typeof(v) == "Instance" and v:IsA("ModuleScript") then
 					local n = v.Name
+					print(n)
 					v = require(v)
 					if typeof(v) == "table" then
 						if v.ready and type(v.ready) == "function" then
@@ -395,13 +391,13 @@ return function(Essentials, Efile)
 			local args = ArgParser:Parse(table.concat(arg))
 			if command == "cmds" then --remake cmds and cmd as commands
 				local length = #allcommandnames
-				Essentials.Console.info(length .. " commands: " .. table.concat(allcommandnames, ", "))
+				lm.io.write(length .. " commands: " .. table.concat(allcommandnames, ", "))
 				return table.concat(allcommandnames, ", ")
 			elseif command == "cmd" then
 				if allcommands[command] == nil then
-					Essentials.Console.warn("Command '" .. command .. "' not found")
+					lm.io.write("Command '" .. command .. "' not found")
 				else
-					Essentials.Console.info(
+					lm.io.write(
 						"Description: " .. allcommands[command].desc,
 						"Usage: " .. allcommands[command].usage
 					)
@@ -445,14 +441,14 @@ return function(Essentials, Efile)
 				else
 					local r = lm:execute(plr, allcommands[command], args)
 					if r and not o and allcommands[command].displayOutput then
-						Essentials.Console.info(r)
+						lm.io.write(r)
 					end
 					return r
 				end
 			end
 		end
 
-		lm.vars["SH_HEADER"] = "<b>%plr</b> %path&gt; %cmd"
+		lm.vars["SH_HEADER"] = "\x1b[1m%plr</b> %path&gt; %cmd"
 
 		-- Determine text x and y from rows and columns in TextLabel text
 		local function getTextXY(text, rows, cols)
@@ -503,7 +499,7 @@ return function(Essentials, Efile)
 			fEStr = string.match(fEStr, "^%s*(.-)%s*$")
 
 			local time = os.date("%Y/%m/%d %H:%M:%S", os.time())
-			Essentials.Console.info(table.pack(lm.vars["SH_HEADER"]:gsub("%%plr",plr.Name):gsub("%%path",self.xfs.fullCwd()):gsub("%%cmd",fEStr))[1])
+			lm.io.write(table.pack(lm.vars["SH_HEADER"]:gsub("%%plr",plr.Name):gsub("%%path",self.xfs.fullCwd()):gsub("%%cmd",fEStr))[1])
 
 			local fLStr = string.split(fEStr, " > ") or fEStr
 

@@ -26,7 +26,7 @@ local cmd = {
 			value = math.floor(value)
 			value /= 100
 
-			essentials.Console.info("Ping to <b>"..url.."</b> took <b>"..value.."ms</b>")
+			pCsi.io.write("Ping to <b>"..url.."</b> took <b>"..value.."ms</b>")
 			return
 		end
 		local ctype = args[3]
@@ -45,7 +45,7 @@ local cmd = {
 		
 		--local bf = require(script.BrainFudge)
 		--bf = bf.execute(table.concat(args," "))
-		--essentials.Console.info("bf: "..bf)
+		--pCsi.io.write("bf: "..bf)
 		return request.Body
 	end,
 }

@@ -71,7 +71,7 @@ local cmd = {
 	
 
 		environment.math = math
-		environment.print = essentials.Console.info
+		environment.print = pCsi.io.write
 		environment.warn = essentials.Console.warn
 		environment.error = essentials.Console.error
 
@@ -349,7 +349,7 @@ local cmd = {
 				end
 				report(status, msg)
 				if status and result.n > 1 then -- any result to print?
-					status, msg = pcall(essentials.Console.info, unpack(result, 2, result.n))
+					status, msg = pcall(pCsi.io.write, unpack(result, 2, result.n))
 					if not status then
 						l_message(true, progname, string_format("error calling %s (%s)", LUA_QL("print"), msg))
 					end

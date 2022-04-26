@@ -5,7 +5,7 @@ local cmd = {
 	usage = [[$ ]],
 	fn = function(plr, pCsi, essentials, args)
 		pCsi.xfs.mkfile(args[1])
-		essentials.Console.info("Created file named "..args[1])
+		pCsi.io.write("Created file named "..args[1])
 
 	end,
 }
