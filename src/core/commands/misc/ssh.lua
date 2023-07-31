@@ -37,7 +37,7 @@ local cmd = {
 				return table
 			end,
 		}
-
+		address = ""
 		for i, v in ipairs(address_msk) do
 			if v == "255" then
 				address ..= (i == 1 and "192" or "168")
@@ -59,7 +59,7 @@ local cmd = {
 			return MessagingService:SubscribeAsync(topicname, function(message)
 				local data = message.Data
 				data = jsoncrypt.decrypt(data, _key)
-				if not data or not data.header or not data.ip or not data.roomstr == roomstr then
+				if not data or not data.header or not data.ip or not (data.roomstr == roomstr) then
 					return
 				end
 				print("--> " .. game:GetService("HttpService"):JSONEncode(data))
@@ -89,7 +89,8 @@ local cmd = {
 				elseif data.header == "sshPacket_end" then
 					pCsi.io.write("SSH Session ended by <b>" .. data.ip .. "</b>")
 				elseif data.header == "sshPacket_in" and data.message and data.player then
-					pCsi.parseCommand(data.player, data.message)
+					print(data.player.UserId, data.message)
+					pCsi:parseCommand(data.player, data.message)
 				end
 			end)
 		end)
@@ -137,7 +138,7 @@ local cmd = {
 				task.wait()
 				print("<-- " .. game:GetService("HttpService"):JSONEncode(data))
 
-				if not data or not data.header or not data.ip or not data.roomstr == roomstr then
+				if not data or not data.header or not data.ip or not (data.roomstr == roomstr) then
 					return
 				end
 				if data.header == "sshPacket_ack" then
@@ -168,8 +169,9 @@ local cmd = {
 				)
 
 				pCsi.parseCommand = oldparse
+				return
 			end
-			if not plra == plr then
+			if not (plra == plr) then
 				return pCsi.io.write(
 					"This ssh session is being used by <b>" .. plr.Name .. "</b>, consider ending the session? '!quit' "
 				)
