@@ -1,5 +1,5 @@
---[[       __ _ _      
-  ___ / _(_) | ___ 
+--[[       __ _ _
+  ___ / _(_) | ___
  / _ \ |_| | |/ _ \
 |  __/  _| | |  __/
  \___|_| |_|_|\___|
@@ -27,7 +27,7 @@ return function(Essentials, Efile)
 
 		Essentials.Console.info(verinfo.sname .. " - " .. verinfo.vname)
 		Essentials.Console.info("Use 'cmds' to get a list of all available commands | Use 'uac' to set, change, or lock with a password this session")
-		
+
 		local Folder = script.commands
 		local config = require(script.Configuration)
 
@@ -38,7 +38,7 @@ return function(Essentials, Efile)
 
 
 		-- improve all of this code
-	
+
 
 		lm.vars = {}
 
@@ -90,7 +90,7 @@ return function(Essentials, Efile)
 
 			-- Turn ANSI Sequences into Roblox RichText tags
 			local colors = 0
-			
+
 			str = str:gsub("\x1b%[(%d+)m", function(c)
 				local color = tonumber(c)
 				if colors == 0 then --remove all richtext tags in the string if using ansi
@@ -129,7 +129,7 @@ return function(Essentials, Efile)
 				end
 			end)
 			-- For every tag add it's corresponding closing tag to the string in reverse order
-			
+
 			if not colors == 0 then
 				for i = #str, 1, -1  do
 					if str:sub(i, i) == "<" then
@@ -140,17 +140,17 @@ return function(Essentials, Efile)
 						end
 						local tag = str:sub(i, j)
 						str ..= "</" .. tag:sub(2, -2) .. ">"
-	
+
 						-- Addstr = str:gsub(tag, tag .. "</" .. tag:sub(2, -2) .. ">")
 					end
 				end
 			end
-		
+
 
 
 			-- Close each richtext tag in the string
 			--str = str:gsub("<[^>]+>", "</>")
-				
+
 			-- Parse ANSI Bell Character and call function if found
 			str = str:gsub("\x07", function(str)
 				-- Sound a Bell/Beep?
@@ -198,11 +198,11 @@ return function(Essentials, Efile)
 					end
 				elseif typeof(v) == "Instance" and v:IsA("Folder") then
 					self:load(v.Name, v:GetChildren(), newfolder)
-				elseif typeof(v) == "Instance" and v:IsA("SurfaceGui") then 
+				elseif typeof(v) == "Instance" and v:IsA("SurfaceGui") then
 					local n = v.Name
 					newfolder[n] = v
 				end
-				
+
 			end
 		end
 
@@ -218,18 +218,18 @@ return function(Essentials, Efile)
 			Trim = function(self, str: string)
 				return string.match(str, "^%s*(.-)%s*$")
 			end,
-		
+
 			ReplaceCharacters = function(self, str: string, chars: {}, replaceWith)
 				for i, char in ipairs(chars) do
 					str = string.gsub(str, char, replaceWith or "")
 				end
 				return str
 			end,
-		
+
 			RemoveQuotes = function(self, str: string)
 				return self:ReplaceCharacters(str, {'^"(.+)"$', "^'(.+)'$"}, "%1")
 			end,
-		
+
 			SplitString = function(self, str: string, splitChar: string, removeQuotes: boolean)
 				local segments = {}
 				local sentinel = string.char(0)
@@ -244,22 +244,22 @@ return function(Essentials, Efile)
 				end
 				return segments
 			end,
-		
+
 			ConvertToParams = function(self, args, stopAtFirstParamArg)
 				local result = {}
 				local curParam
 				local curPos = 1
 				local curArg = args[curPos]
-		
+
 				while curArg do
 					local gotParam = curArg:match("^%-%-(.+)") or curArg:match("^%-(.+)")
-					
+
 					if gotParam then
 						curParam = gotParam
 						result[curParam] = ""
 					elseif curParam then
 						result[curParam] = result[curParam] .. curArg
-		
+
 						--// If we only want one match per param
 						if stopAtFirstParamArg then
 							curParam = nil
@@ -267,14 +267,14 @@ return function(Essentials, Efile)
 					else
 						table.insert(result, curArg)
 					end
-		
+
 					curPos += 1
 					curArg = args[curPos]
 				end
-		
+
 				return result
 			end,
-		
+
 			ConvertToDataType = function(self, str)
 				if tonumber(str) then
 					return tonumber(str)
@@ -286,18 +286,18 @@ return function(Essentials, Efile)
 					return str
 				end
 			end,
-		
+
 			Parse = function(self, str: string, split: string?, removeQuotes: boolean?, stopAtFirstParamArg: boolean?)
 				local removeQuotes = if removeQuotes ~= nil then removeQuotes else true
 				local stopAtFirstParamArg = if stopAtFirstParamArg ~= nil then stopAtFirstParamArg else true
 				local extracted = self:SplitString(str, split or ' ', false)
 				local params = self:ConvertToParams(extracted, stopAtFirstParamArg)
-		
+
 				for ind,value in pairs(params) do
 					local trueVal = self:ConvertToDataType(value)
 					params[ind] = if type(trueVal) == "string" and removeQuotes then self:RemoveQuotes(trueVal) else trueVal
 				end
-				
+
 				return params
 			end
 		}
@@ -409,14 +409,14 @@ return function(Essentials, Efile)
 						filetype = filetype[#filetype]
 						if lm.fileTypeBindings and lm.fileTypeBindings[filetype] then
 							--[[
-												
+
 											lm.fileTypeBindings[filetype] = {
 												command = "luau",
 												args = {
 													"interpret" -- insert file arg
 												}
 											}
-											
+
 											]]
 
 							lm:execute(
@@ -542,7 +542,7 @@ return function(Essentials, Efile)
 			end
 		end
 
-		lm.shutdown = function() 
+		lm.shutdown = function()
 			if Essentials.Freestore[0x000A2] then
 				Essentials.Console.warn("Shutting down..")
 				Essentials.Freestore[0x000A2]:shutdown()
@@ -559,7 +559,7 @@ return function(Essentials, Efile)
 						stat = 1
 					else
 						stat = 0
-					end 
+					end
 				elseif arg == Enum.KeyCode.RightAlt then
 					if stat == 1 then
 						stat = 2
@@ -597,7 +597,6 @@ return function(Essentials, Efile)
 	function Efile:Stop()
 		if inputconn then
 			inputconn:Disconnect()
-			inputconn:Destroy()
 		end
 	end
 
